@@ -1,0 +1,3 @@
+<div class="text-white flex items-center justify-center lg:py-20 !py-16" style="background: transparent linear-gradient(217deg, #1f0785 0%, #FF2ADE 100%) 0% 0% no-repeat padding-box;">
+  <h1 class="lg:text-5xl text-4xl text-center lg:p-10 !p-3" style="background: url('{{ asset('public/assets/images/mb-transparent_w.png') }}'); background-size: contain; background-position:left; background-repeat:no-repeat">{{$headline}}</h1>
+</div>

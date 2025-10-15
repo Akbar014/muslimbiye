@@ -1,0 +1,261 @@
+@import "tailwindcss";
+
+:root {
+    --primary-color: #e92f83;
+    --primary-color-10: rgba(233, 47, 131, 0.1);
+    --secondary-color: #522b79;
+    --secondary-color-alternative: #ad277c;
+    --dark-color: #333333;
+    --gray-color: #656565;
+    --primary-light-color: rgba(233, 47, 131, 0.5);
+    --secondary-light-color: rgba(82, 43, 121, 0.5);
+}
+
+@theme {
+    --color-primary-color: var(--primary-color);
+    --color-primary-color-10: var(--primary-color-10);
+    --color-primary-light-color: var(--primary-light-color);
+    --color-secondary-light-color: var(--secondary-light-color);
+    --color-secondary-color: var(--secondary-color);
+    --color-secondary-color-alter: var(--secondary-color-alternative);
+    --color-dark-color: var(--dark-color);
+    --color-gray-color: var(--gray-color);
+}
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+}
+
+input[type="number"] {
+    -moz-appearance: textfield;
+}
+
+.container {
+    @apply xl:max-w-[1200px] 2xl:max-w-[1400px] mx-auto px-[20px] xl:px-2;
+}
+
+.row {
+    @apply grid grid-cols-12 gap-y-0 gap-x-0 md:gap-x-3 lg:gap-x-5 xl:gap-x-8;
+}
+
+/* sequence styles */
+
+.od-top-bg-content-container {
+    @apply pt-20;
+}
+.second_text {
+    filter: brightness(130%);
+}
+.home-hadith-sec {
+    @apply h-full flex items-center justify-center flex-col mx-10;
+}
+
+.home-hadith-sec > div {
+    @apply rounded-lg border-[1px] p-4 border-white my-3;
+}
+.home-hadith-sec p {
+    @apply text-lg font-bold text-white;
+}
+.home-hadith-sec span {
+    @apply block text-right text-slate-300;
+}
+
+.biodata_nav_container {
+    @apply flex overflow-x-scroll scroll-smooth py-4 mb-4 pe-6;
+}
+.biodata_nav {
+    @apply relative;
+}
+.biodata_nav_container::after {
+    content: "";
+    @apply h-full w-10 bg-gradient-to-l from-[#faf9fb] to-[transparent] absolute top-0 right-0;
+}
+.biodata_nav_container_before {
+    content: "";
+    @apply opacity-0 h-full w-10 bg-gradient-to-r from-[#faf9fb] to-[transparent] absolute top-0 left-0 duration-150;
+}
+.biodata_navigation {
+    @apply flex items-center cursor-pointer px-3 py-2 select-none;
+}
+.biodata_nav_number {
+    @apply text-center relative inline-block me-2;
+}
+.biodata_nav_number::after {
+    content: ".";
+}
+.biodata_navigation_active {
+    @apply text-white relative bg-secondary-color;
+}
+.biodata_navigation_active:first-of-type .biodata_nav_number {
+    @apply ms-2;
+}
+.biodata_navigation_active:first-of-type::before {
+    content: "";
+    @apply bg-[#faf9fb] h-full w-4 absolute left-0 top-0;
+}
+.biodata_navigation_active:first-of-type::after {
+    content: "";
+    @apply rounded-l-full h-full w-4 absolute left-0 top-0 bg-secondary-color;
+}
+
+.biodata_navigation_active_single {
+    @apply bg-primary-color text-white relative rounded-full;
+}
+.biodata_navigation_active_single:first-of-type .biodata_nav_number {
+    @apply ms-2;
+}
+.biodata_navigation_active_single:first-of-type .biodata_nav_title {
+    @apply me-2;
+}
+.biodata_navigation_active_single:first-of-type::before {
+    content: "";
+    @apply bg-[#faf9fb] h-full w-4 absolute left-0 top-0;
+}
+.biodata_navigation_active_single:first-of-type::after {
+    content: "";
+    @apply bg-primary-color rounded-l-full h-full w-4 absolute left-0 top-0;
+}
+
+.biodata_navigation_active_last {
+    @apply bg-primary-color;
+}
+
+.biodata_navigation_active_last .biodata_nav_title {
+    @apply me-2;
+}
+.biodata_navigation_active_last::before {
+    content: "";
+    @apply bg-[#faf9fb] h-full w-4 absolute right-0 top-0;
+}
+.biodata_navigation_active_last::after {
+    content: "";
+    @apply bg-primary-color rounded-r-full h-full w-4 absolute right-0 top-0;
+}
+
+.biodata_nav_title {
+    @apply whitespace-nowrap;
+}
+.nav_pages_container {
+    @apply overflow-x-hidden h-full w-full;
+}
+.nav_pages_container .nav_page {
+    @apply h-full w-full bg-[#faf9fb] hidden;
+}
+.nav_pages_container .nav_pages_active {
+    @apply !block;
+}
+.oddb-title {
+    @apply text-2xl font-bold border-b-[1px] pb-2 text-secondary-color;
+}
+.od-overlay {
+    @apply !hidden;
+}
+.parent:hover .parent-hover\:block {
+    @apply !block;
+}
+.search_box_container .select2-container {
+    @apply absolute bottom-0 left-0 rounded-sm;
+}
+.search_box_container .select2-container .selection {
+    @apply !border-none;
+}
+.search_box_container .select2-container--default .select2-selection--multiple {
+    @apply !border-none pl-3;
+}
+
+.hoverable-btn {
+    @apply bg-primary-color duration-300 ease-in;
+}
+
+.ebogc-item ul li {
+    list-style-type: disc;
+}
+.ebogc-item ul {
+    @apply ml-8;
+}
+
+.BlogContainer * {
+    @apply text-justify;
+}
+.BlogContainer p {
+    @apply my-2;
+}
+.BlogContainer h1,
+.BlogContainer h2,
+.BlogContainer h3,
+.BlogContainer h4,
+.BlogContainer h5,
+.BlogContainer h6 {
+    @apply text-left;
+}
+.BlogContainer h1 {
+    @apply my-3 text-3xl sm:text-5xl;
+}
+.BlogContainer h2 {
+    @apply my-3 text-2xl sm:text-4xl;
+}
+.BlogContainer h3 {
+    @apply my-3 text-xl sm:text-3xl;
+}
+.BlogContainer h4 {
+    @apply my-3 text-lg sm:text-2xl;
+}
+.BlogContainer h5 {
+    @apply my-3 text-base sm:text-xl;
+}
+.BlogContainer h6 {
+    @apply my-3 text-sm sm:text-lg;
+}
+.BlogContainer ul {
+    @apply my-2 list-disc;
+}
+.BlogContainer ol {
+    @apply my-2 list-decimal;
+}
+.BlogContainer ul,
+.BlogContainer ol {
+    @apply ml-8;
+}
+.BlogContainer table td {
+    @apply my-2 border-[1px] p-1;
+}
+.BlogContainer table tr:nth-child(odd) {
+    @apply bg-slate-100/50;
+}
+.BlogContainer table tr {
+    @apply hover:bg-slate-100/80;
+}
+.BlogContainer table tr th {
+    @apply bg-slate-600 text-white;
+}
+.BlogContainer a[href] {
+    @apply text-primary-color hover:underline duration-300;
+}
+.bg-banner-color {
+    @apply bg-secondary-color;
+}
+.bg-button-color {
+    @apply bg-secondary-color;
+}
+
+.search_form .select2-selection__clear,
+.search_form .select2-selection__arrow {
+    @apply !hidden;
+}
+
+/* .od-accordion a {
+    font-size: 19px;
+}
+
+.od-body-part p {
+    font-size: 19px; 
+    line-height: 1.6;
+} */
+
+.dropdown_no_arrow {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    text-indent: 1px;
+    text-overflow: "";
+}

@@ -1,0 +1,37 @@
+/** @type {import('tailwindcss').Config} */
+module.exports = {
+    content: [
+        "./resources/views/frontend_new/**/*.php",
+        "./resources/views/auth/**/*.php",
+        "./resources/views/biodata/**/*.php",
+        "resources/views/backend/admin/biodata/pdf/*.php",
+    ],
+
+    theme: {
+        extend: {
+            colors: {
+                "primary-color": "var(--primary-color)",
+                "primary-color-10": "var(--primary-color-10)",
+                "primary-light-color": "var(--primary-light-color)",
+                "secondary-light-color": "var(--secondary-light-color)",
+                "secondary-color": "var(--secondary-color-alternative)",
+                "secondary-color-alter": "var(--secondary-color-alternative)",
+                "dark-color": "var(--dark-color)",
+                "gray-color": "var(--gray-color)",
+            },
+            zIndex: {
+                9999: "9999",
+            },
+            fontSize: {
+                base: "16px",
+                sm: "19px",
+                lg: "16px",
+            },
+            maxWidth: {
+                1200: "1200px", // Add your custom values
+                1400: "1400px",
+            },
+        },
+    },
+    plugins: [],
+};
