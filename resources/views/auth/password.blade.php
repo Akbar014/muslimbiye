@@ -53,7 +53,7 @@
                 <a style="color: #fff" href="{{ route('forgot.password') }}"
                 class="bg-secondary-color text-white !py-2 !px-3 rounded-sm cursor-pointer drop-shadow-none hover:drop-shadow-lg shadow-slate-400 duration-100 group !no-underline ms-4 inline-block">
                 @lang('site.forgot_password')
-                <i class="fa fa-unlock-alt" aria-hidden="true"></i>
+                {{-- <i class="fa fa-unlock-alt" aria-hidden="true"></i> --}}
                 </a>
             </div>
 

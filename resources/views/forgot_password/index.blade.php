@@ -1,5 +1,5 @@
 @extends('auth.layouts.auth')
-@section('title', 'Login')
+@section('title', 'Forgot Password')
 
 @section('auth')
     <form action="{{ route('forgot.password.submit') }}" method="POST" class="flex items-center justify-center h-full w-full">
