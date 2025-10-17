@@ -19,6 +19,18 @@ Route::prefix('admin_login')->group(function () {
     Route::get('logout', [AdminLoginController::class, 'logout']);
 });
 
+
+
+//forgot password
+Route::controller(ForgotPasswordController::class)->prefix('/')->name('forgot.')->group(function () {
+    Route::get('/forgot/password', 'forgotPasswordView')->name('password');
+    Route::post('/forgot/password', 'forgotPasswordSend')->name('password.submit');
+
+    //password reset form
+    Route::get('/reset/password/{token}', 'resetPasswordView')->name('password.reset');
+    Route::post('/reset/password', 'resetPassword')->name('password.reset.submit');
+});
+
 // Admin Dashborad
 Route::group(
     

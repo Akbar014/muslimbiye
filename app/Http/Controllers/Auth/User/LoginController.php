@@ -149,7 +149,7 @@ class LoginController extends Controller
    public function existingUserLogin(Request $request)
    {
       $rules = [
-         'password' => 'required|string|min:8',
+         'password' => 'required|string|min:6',
          'phone' => 'required|string|max:15|regex:/^[0-9+]+$/', // Adjust regex as needed
          'email' => 'required|string|email|max:255', // Email validation
       ];
@@ -338,9 +338,19 @@ class LoginController extends Controller
    }
 
 
-   public function logout()
+   // public function logout()
+   // {
+   //    Auth::guard('user')->logout();
+   //    return redirect()->route('user.auth.login')->with('success', 'See You Soon!');
+   // }
+
+
+   public function logout(Request $request)
    {
       Auth::guard('user')->logout();
+      $request->session()->invalidate();
+      $request->session()->regenerateToken();
       return redirect()->route('user.auth.login')->with('success', 'See You Soon!');
    }
+
 }
