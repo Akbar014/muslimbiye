@@ -59,7 +59,7 @@ a:focus {
   opacity: 1;
   visibility: visible;
   transform: translateY(0);
-}z
+}
 
 .progress-wrap::after {
   position: absolute;
@@ -72,7 +72,7 @@ a:focus {
   text-align: center;
   line-height: 50px;
   font-size: 20px;
-  color: #E94057;
+  color: #FF2ADE;
   /* The pink color for the heart */
   left: 0;
   top: 0;
@@ -93,7 +93,7 @@ a:focus {
 }
 
 .progress-wrap svg.progress-circle path {
-  stroke: #E94057;
+  stroke: #FF2ADE;
   /* The color for the progress ring */
   stroke-width: 4;
   box-sizing: border-box;
