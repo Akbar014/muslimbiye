@@ -35,23 +35,15 @@ $setting = App\Models\Setting::first();
                     </h4> -->
                     <!-- <a href="#" class="btn_register-ht"
                   ><img src="register-icon.svg" alt="" />Create Account</a -->
-                    <a href="{{ route('user.edit_biodata.index') }}" class="btn_register-ht"><img src="{{ asset('assets') }}/svg/login-icon.svg" alt="" /> @lang('site.create_biodata')</a>
+                    <a href="{{ route('user.edit_biodata.index') }}" class="btn_register-ht"><img
+                            src="{{ asset('assets') }}/svg/login-icon.svg" alt="" /> @lang('site.create_biodata')</a>
                 </div>
             </div>
             <div class="col-md-6">
                 <div class="heart-animation-area">
-                    <img
-                        src="{{ asset('assets') }}/newImages/heart12.png"
-                        alt="Floating Heart"
-                        class="heart heart1" />
-                    <img
-                        src="{{ asset('assets') }}/newImages/heart12.png"
-                        alt="Floating Heart"
-                        class="heart heart2" />
-                    <img
-                        src="{{ asset('assets') }}/newImages/car.png"
-                        alt="Floating Heart"
-                        class="heart heart3" />
+                    <img src="{{ asset('assets') }}/newImages/heart12.png" alt="Floating Heart" class="heart heart1" />
+                    <img src="{{ asset('assets') }}/newImages/heart12.png" alt="Floating Heart" class="heart heart2" />
+                    <img src="{{ asset('assets') }}/newImages/car.png" alt="Floating Heart" class="heart heart3" />
                 </div>
             </div>
         </div>
@@ -73,10 +65,7 @@ $setting = App\Models\Setting::first();
                                 <label class="search-label">@lang('site.i_am_looking_for') </label>
                                 <div class="left">
                                     <div class="custom-select-wrapper">
-                                        <select
-                                            name="bride_groom"
-                                            id="Looking"
-                                            class="custom-select sources">
+                                        <select name="bride_groom" id="Looking" class="custom-select sources">
                                             <option value="">@lang('site.please_select')</option>
                                             <option value="all">@lang('site.all_biodata')</option>
                                             <option value="groom">@lang('site.groom_biodata')</option>
@@ -86,14 +75,16 @@ $setting = App\Models\Setting::first();
 
 
                                         <div class="custom-select sources">
-                                            <span
-                                                class="custom-select-trigger"
+                                            <span class="custom-select-trigger"
                                                 id="Looking_change">@lang('site.please_select')</span>
                                             <div class="custom-options">
                                                 <span class="custom-option undefined" data-value="For"></span>
-                                                <span class="custom-option undefined" data-value="all">@lang('site.all_biodata')</span>
-                                                <span class="custom-option undefined" data-value="groom">@lang('site.groom_biodata')</span>
-                                                <span class="custom-option undefined" data-value="bride">@lang('site.bride_biodata')</span>
+                                                <span class="custom-option undefined"
+                                                    data-value="all">@lang('site.all_biodata')</span>
+                                                <span class="custom-option undefined"
+                                                    data-value="groom">@lang('site.groom_biodata')</span>
+                                                <span class="custom-option undefined"
+                                                    data-value="bride">@lang('site.bride_biodata')</span>
                                             </div>
                                         </div>
 
@@ -105,10 +96,7 @@ $setting = App\Models\Setting::first();
                                 <label class="search-label">@lang('site.marital_status') </label>
                                 <div class="left">
                                     <div class="custom-select-wrapper">
-                                        <select
-                                            name="marital_status"
-                                            id="Looking2"
-                                            class="custom-select sources">
+                                        <select name="marital_status" id="Looking2" class="custom-select sources">
                                             <option value="">@lang('site.please_select')</option>
                                             <option value="all">@lang('site.all_biodata')</option>
                                             <option value="unmarried">@lang('site.unmarried')</option>
@@ -121,17 +109,22 @@ $setting = App\Models\Setting::first();
 
 
                                         <div class="custom-select sources">
-                                            <span
-                                                class="custom-select-trigger"
+                                            <span class="custom-select-trigger"
                                                 id="Looking2_change">@lang('site.please_select')</span>
                                             <div class="custom-options">
                                                 <!-- <span class="custom-option undefined" data-value="all"></span> -->
-                                                <span class="custom-option undefined" data-value="all">@lang('site.all')</span>
-                                                <span class="custom-option undefined" data-value="unmarried">@lang('site.unmarried')</span>
-                                                <span class="custom-option undefined" data-value="married">@lang('site.married')</span>
-                                                <span class="custom-option undefined" data-value="divorced">@lang('site.divorced')</span>
-                                                <span class="custom-option undefined" data-value="widow">@lang('site.widow')</span>
-                                                <span class="custom-option undefined" data-value="widower">@lang('site.widower')</span>
+                                                <span class="custom-option undefined"
+                                                    data-value="all">@lang('site.all')</span>
+                                                <span class="custom-option undefined"
+                                                    data-value="unmarried">@lang('site.unmarried')</span>
+                                                <span class="custom-option undefined"
+                                                    data-value="married">@lang('site.married')</span>
+                                                <span class="custom-option undefined"
+                                                    data-value="divorced">@lang('site.divorced')</span>
+                                                <span class="custom-option undefined"
+                                                    data-value="widow">@lang('site.widow')</span>
+                                                <span class="custom-option undefined"
+                                                    data-value="widower">@lang('site.widower')</span>
 
                                             </div>
                                         </div>
@@ -143,10 +136,7 @@ $setting = App\Models\Setting::first();
                                 <label class="search-label">@lang('site.biodata_type')</label>
                                 <div class="left">
                                     <div class="custom-select-wrapper">
-                                        <select
-                                            name="biodata_type"
-                                            id="lookig3"
-                                            class="custom-select sources">
+                                        <select name="biodata_type" id="lookig3" class="custom-select sources">
                                             <option value="">@lang('site.please_select')</option>
                                             <option value="all">@lang('site.all_biodata')</option>
                                             <option value="general">@lang('site.groom_biodata')</option>
@@ -154,14 +144,16 @@ $setting = App\Models\Setting::first();
                                         </select>
 
                                         <div class="custom-select sources">
-                                            <span
-                                                class="custom-select-trigger"
+                                            <span class="custom-select-trigger"
                                                 id="Looking3_change">@lang('site.please_select')</span>
                                             <div class="custom-options">
                                                 <!-- <span class="custom-option undefined" data-value="all"></span> -->
-                                                <span class="custom-option undefined" data-value="bride">@lang('site.all')</span>
-                                                <span class="custom-option undefined" data-value="general">@lang('site.general')</span>
-                                                <span class="custom-option undefined" data-value="deen">@lang('site.alem_alema')</span>
+                                                <span class="custom-option undefined"
+                                                    data-value="bride">@lang('site.all')</span>
+                                                <span class="custom-option undefined"
+                                                    data-value="general">@lang('site.general')</span>
+                                                <span class="custom-option undefined"
+                                                    data-value="deen">@lang('site.alem_alema')</span>
 
 
                                             </div>
@@ -174,10 +166,12 @@ $setting = App\Models\Setting::first();
                                 <label class="search-label">@lang('site.parmanent_address')</label>
                                 <idv class="left">
                                     <div class="custom-select-wrapper">
-                                        <input type="hidden" name="district" id="district" value="" class="address_name" required>
+                                        <input type="hidden" name="district" id="district" value="" class="address_name"
+                                            required>
 
                                         <div class="custom-select sources">
-                                            <span class="custom-select-trigger" id="address_display"> @lang('site.please_select')</span>
+                                            <span class="custom-select-trigger" id="address_display">
+                                                @lang('site.please_select')</span>
 
                                             <div class="custom-options address_dropdown">
                                                 <div class="custom-option country_btn" data-country="bangladesh">
@@ -185,14 +179,18 @@ $setting = App\Models\Setting::first();
                                                 </div>
 
                                                 @foreach ($addressList as $divisionId => $division)
-                                                <div class="custom-option division_btn" data-division-id="{{ $divisionId }}">
+                                                <div class="custom-option division_btn"
+                                                    data-division-id="{{ $divisionId }}">
                                                     {{ App::getLocale() == 'en' ? $division['name'] : __('districts.' . $division['name']) }}
                                                     <div class="division_districts hidden">
                                                         @foreach ($division['districts'] as $districtId => $district)
-                                                        <div class="custom-option district_btn" data-district-id="{{ $districtId }}" data-division-id="{{ $divisionId }}">
+                                                        <div class="custom-option district_btn"
+                                                            data-district-id="{{ $districtId }}"
+                                                            data-division-id="{{ $divisionId }}">
                                                             {{ App::getLocale() == 'en' ? $district['name'] : __('districts.' . $district['name']) }}
                                                             <div class="district_subdistricts hidden">
-                                                                @foreach ($district['subdistricts'] as $subdistrictId => $subdistrict)
+                                                                @foreach ($district['subdistricts'] as $subdistrictId =>
+                                                                $subdistrict)
                                                                 <div class="custom-option subdistrict_btn"
                                                                     data-value="{{ $subdistrict['value'] }}">
                                                                     {{ App::getLocale() == 'en' ? $subdistrict['name'] : __('districts.' . $subdistrict['name']) }}
@@ -208,70 +206,70 @@ $setting = App\Models\Setting::first();
                                         </div>
                                     </div>
                             </div>
-                            
-                            
-<style>
-    .custom-modal {
-    display: none; 
-    position: fixed; 
-    z-index: 9999; 
-    left: 0;
-    top: 0;
-    width: 100%; 
-    height: 100%; 
-    background: rgba(0,0,0,0.5); 
-    justify-content: center; 
-    align-items: center;
-}
 
-.custom-modal-content {
-    background: #fff; 
-    padding: 20px; 
-    border-radius: 8px; 
-    text-align: center;
-    width: 400px;
-    max-width: 90%;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-}
 
-.close-btn {
-    float: right;
-    font-size: 24px;
-    font-weight: bold;
-    cursor: pointer;
-} 
+                            <style>
+                            .custom-modal {
+                                display: none;
+                                position: fixed;
+                                z-index: 9999;
+                                left: 0;
+                                top: 0;
+                                width: 100%;
+                                height: 100%;
+                                background: rgba(0, 0, 0, 0.5);
+                                justify-content: center;
+                                align-items: center;
+                            }
 
-</style>
+                            .custom-modal-content {
+                                background: #fff;
+                                padding: 20px;
+                                border-radius: 8px;
+                                text-align: center;
+                                width: 400px;
+                                max-width: 90%;
+                                box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+                            }
+
+                            .close-btn {
+                                float: right;
+                                font-size: 24px;
+                                font-weight: bold;
+                                cursor: pointer;
+                            }
+                            </style>
 
                             <div class="col-md-1 col-sm-12 col-xs-12 pad-0 hidden-sm hidden-xs"
                                 style="padding-left: 0px">
                                 <div class="search-button">
-                                   <!-- Search Button -->
+                                    <!-- Search Button -->
                                     @if (Auth::guard('user')->check())
-                                        @php
-                                            $user = Auth::guard('user')->user(); 
-                                            $userBioStatus = App\Models\Biodata::where('user_id', $user->id)->value('status');
-                                        @endphp
-                                        @if($userBioStatus != 0)
-                                        <button type="submit" class="searchnow" onclick="find_match()" style="cursor:pointer;">
-                                            @lang('site.search')
-                                        </button>
-                                        @else
-                                           <a type="text" class="searchnow" onclick="registerModal()" style="cursor:pointer;">
-                                                @lang('site.search')
-                                            </a>              
-                                        @endif
+                                    @php
+                                    $user = Auth::guard('user')->user();
+                                    $userBioStatus = App\Models\Biodata::where('user_id', $user->id)->value('status');
+                                    @endphp
+                                    @if($userBioStatus != 0)
+                                    <button type="submit" class="searchnow" onclick="find_match()"
+                                        style="cursor:pointer;">
+                                        @lang('site.search')
+                                    </button>
                                     @else
-                                        <a class=" searchnow od-button signin-button" onclick="loginAlertModal()" style="cursor:pointer;">
-                                            @lang('site.search')
-                                        </a>
+                                    <a type="text" class="searchnow" onclick="registerModal()" style="cursor:pointer;">
+                                        @lang('site.search')
+                                    </a>
+                                    @endif
+                                    @else
+                                    <a class=" searchnow od-button signin-button" onclick="loginAlertModal()"
+                                        style="cursor:pointer;">
+                                        @lang('site.search')
+                                    </a>
                                     @endif
                                 </div>
                             </div>
 
 
-                            <div
-                                class="form-group col-sm-12 col-xs-12 land-search hidden-lg hidden-md">
+                            <div class="form-group col-sm-12 col-xs-12 land-search hidden-lg hidden-md">
                                 <div class="left">
                                     <!--<button-->
                                     <!--    type="submit"-->
@@ -283,29 +281,31 @@ $setting = App\Models\Setting::first();
                                     <!--    &nbsp;@lang('site.search')-->
                                     <!--</button>-->
                                     @if (Auth::guard('user')->check())
-                                        @php
-                                            $user = Auth::guard('user')->user(); 
-                                            $userBioStatus = App\Models\Biodata::where('user_id', $user->id)->value('status');
-                                        @endphp
-                                        @if($userBioStatus != 0)
-                                        <button type="submit" class="searchnow" onclick="find_match()" style="cursor:pointer;">
-                                            @lang('site.search')
-                                        </button>
-                                        @else
-                                           <a type="text" class="searchnow" onclick="registerModal()" style="cursor:pointer;">
-                                                @lang('site.search')
-                                            </a>              
-                                        @endif
+                                    @php
+                                    $user = Auth::guard('user')->user();
+                                    $userBioStatus = App\Models\Biodata::where('user_id', $user->id)->value('status');
+                                    @endphp
+                                    @if($userBioStatus != 0)
+                                    <button type="submit" class="searchnow" onclick="find_match()"
+                                        style="cursor:pointer;">
+                                        @lang('site.search')
+                                    </button>
                                     @else
-                                        <a class=" searchnow od-button signin-button"  onclick="loginAlertModal()" style="cursor:pointer;">
-                                            @lang('site.search')
-                                        </a>
+                                    <a type="text" class="searchnow" onclick="registerModal()" style="cursor:pointer;">
+                                        @lang('site.search')
+                                    </a>
                                     @endif
-                                    
+                                    @else
+                                    <a class=" searchnow od-button signin-button" onclick="loginAlertModal()"
+                                        style="cursor:pointer;">
+                                        @lang('site.search')
+                                    </a>
+                                    @endif
+
                                 </div>
                             </div>
                         </div>
-                        
+
                         <div id="approvalModal" class="custom-modal">
                             <div class="custom-modal-content">
                                 <span id="closeModalBtn" class="close-btn">&times;</span>
@@ -316,21 +316,25 @@ $setting = App\Models\Setting::first();
                                 ">
                                     মুসলিম বিয়ে
                                 </h2>
-                
-                                <p style="color: black;"> আপনার বায়োডাটা সাবমিট করুন।</p>
-                                <p style="color: black;">!!! বায়োডাটা সাবমিট করলে আপনি পাচ্ছেন ১০ টি এক্সক্লুসিভ কানেকশন একদম ফ্রি !!!<p>
-                                <button class="btn btn-info mt-2 create-bio">
 
-                                    <a href="{{ route('user.edit_biodata.index') }}" class="col-span-12 sm:col-span-6 bg-button-color !text-white font-bold text-center drop-shadow-none shadow-slate-600 hover:drop-shadow-lg rounded-md gap-2 p-4 w-full h-[60px] flex items-center justify-center max-w-[425px] !no-underline !text-[1rem] sm:!text-[1.2rem]">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="1.2rem" height="1.2rem" viewBox="0 0 16 16">
-                                            <path fill="white" d="M7 7V.5h2V7h6.5v2H9v6.5H7V9H.5V7z"></path>
-                                        </svg> বায়োডাটা তৈরি করুন   
-                                    </a>
-                                </button>
-                                   
+                                <p style="color: black;"> আপনার বায়োডাটা সাবমিট করুন।</p>
+                                <p style="color: black;">!!! বায়োডাটা সাবমিট করলে আপনি পাচ্ছেন ১০ টি এক্সক্লুসিভ কানেকশন
+                                    একদম ফ্রি !!!
+                                <p>
+                                    <button class="btn btn-info mt-2 create-bio">
+
+                                        <a href="{{ route('user.edit_biodata.index') }}"
+                                            class="col-span-12 sm:col-span-6 bg-button-color !text-white font-bold text-center drop-shadow-none shadow-slate-600 hover:drop-shadow-lg rounded-md gap-2 p-4 w-full h-[60px] flex items-center justify-center max-w-[425px] !no-underline !text-[1rem] sm:!text-[1.2rem]">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="1.2rem" height="1.2rem"
+                                                viewBox="0 0 16 16">
+                                                <path fill="white" d="M7 7V.5h2V7h6.5v2H9v6.5H7V9H.5V7z"></path>
+                                            </svg> বায়োডাটা তৈরি করুন
+                                        </a>
+                                    </button>
+
                             </div>
                         </div>
-                        
+
                         <div id="loginAlertModal" class="custom-modal">
                             <div class="custom-modal-content">
                                 <span id="closeModalBtn2" class="close-btn">&times;</span>
@@ -341,68 +345,73 @@ $setting = App\Models\Setting::first();
                                 ">
                                     মুসলিম বিয়ে
                                 </h3>
-                
+
                                 <!--<p style="color: black;">  বায়োডাটা দেখতে লগইন করুন।</p>-->
                                 <!--<p style="color: black;">!!! বায়োডাটা সাবমিট করলে আপনি পাচ্ছেন ১০ টি এক্সক্লুসিভ কানেকশন একদম ফ্রি !!!<p>-->
-                                
-                                 <p style="color: black";> একটি বিশ্বস্ত ও নিরাপদ পরিবেশ বজায় রাখতে আমরা শুধুমাত্র ভেরিফায়েড সদস্যদের বায়োডাটা প্রদর্শন করি। তাই অন্যদের বায়োডাটা দেখতে হলে আপনার বায়োডাটা সাবমিট করুন!</p>
 
-                                <p style="color: black;margin-bottom: 6px;">!!! বায়োডাটা এপ্রুভ হলে আপনি পাবেন ৳১,০০০ মূল্যের ১০টি এক্সক্লুসিভ কানেকশন — একদম ফ্রি !!!<p> 
-                                <button class="btn btn-info mt-4 create-bio">
+                                <p style="color: black" ;> একটি বিশ্বস্ত ও নিরাপদ পরিবেশ বজায় রাখতে আমরা শুধুমাত্র
+                                    ভেরিফায়েড সদস্যদের বায়োডাটা প্রদর্শন করি। তাই অন্যদের বায়োডাটা দেখতে হলে আপনার
+                                    বায়োডাটা সাবমিট করুন!</p>
 
-                                    <a href="{{ route('user.auth.login') }}" class="col-span-12 sm:col-span-6 bg-button-color !text-white font-bold text-center drop-shadow-none shadow-slate-600 hover:drop-shadow-lg rounded-md gap-2 p-4 w-full h-[60px] flex items-center justify-center max-w-[425px] !no-underline !text-[1rem] sm:!text-[1.2rem]">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="1.2rem" height="1.2rem" viewBox="0 0 16 16">
-                                            <path fill="white" d="M7 7V.5h2V7h6.5v2H9v6.5H7V9H.5V7z"></path>
-                                        </svg> &nbsp বায়োডাটা সাবমিট করুন
-                                    </a>
-                                </button>
-                                   
+                                <p style="color: black;margin-bottom: 6px;">!!! বায়োডাটা এপ্রুভ হলে আপনি পাবেন ৳১,০০০
+                                    মূল্যের ১০টি এক্সক্লুসিভ কানেকশন — একদম ফ্রি !!!
+                                <p>
+                                    <button class="btn btn-info mt-4 create-bio">
+
+                                        <a href="{{ route('user.auth.login') }}"
+                                            class="col-span-12 sm:col-span-6 bg-button-color !text-white font-bold text-center drop-shadow-none shadow-slate-600 hover:drop-shadow-lg rounded-md gap-2 p-4 w-full h-[60px] flex items-center justify-center max-w-[425px] !no-underline !text-[1rem] sm:!text-[1.2rem]">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="1.2rem" height="1.2rem"
+                                                viewBox="0 0 16 16">
+                                                <path fill="white" d="M7 7V.5h2V7h6.5v2H9v6.5H7V9H.5V7z"></path>
+                                            </svg> &nbsp বায়োডাটা সাবমিট করুন
+                                        </a>
+                                    </button>
+
                             </div>
                         </div>
 
-        <script>
-           function registerModal() {
-                let modal = document.getElementById("approvalModal");
-                let closeBtn = document.getElementById("closeModalBtn");
-            
-                // Modal দেখাবো
-                modal.style.display = "flex";
-            
-                // Close button click করলে
-                closeBtn.onclick = function () {
-                    modal.style.display = "none";
-                };
-            
-                // Window click করলে (modal er বাইরে)
-                window.onclick = function (event) {
-                    if (event.target === modal) {
-                        modal.style.display = "none";
-                    }
-                };
-            }
-            
-           function loginAlertModal() {
-                let modal = document.getElementById("loginAlertModal");
-                let closeBtn = document.getElementById("closeModalBtn2");
-            
-                // Modal দেখাবো
-                modal.style.display = "flex";
-            
-                // Close button click করলে
-                closeBtn.onclick = function () {
-                    modal.style.display = "none";
-                };
-            
-                // Window click করলে (modal er বাইরে)
-                window.onclick = function (event) {
-                    if (event.target === modal) {
-                        modal.style.display = "none";
-                    }
-                };
-            }
+                        <script>
+                        function registerModal() {
+                            let modal = document.getElementById("approvalModal");
+                            let closeBtn = document.getElementById("closeModalBtn");
 
-        </script> 
-                       
+                            // Modal দেখাবো
+                            modal.style.display = "flex";
+
+                            // Close button click করলে
+                            closeBtn.onclick = function() {
+                                modal.style.display = "none";
+                            };
+
+                            // Window click করলে (modal er বাইরে)
+                            window.onclick = function(event) {
+                                if (event.target === modal) {
+                                    modal.style.display = "none";
+                                }
+                            };
+                        }
+
+                        function loginAlertModal() {
+                            let modal = document.getElementById("loginAlertModal");
+                            let closeBtn = document.getElementById("closeModalBtn2");
+
+                            // Modal দেখাবো
+                            modal.style.display = "flex";
+
+                            // Close button click করলে
+                            closeBtn.onclick = function() {
+                                modal.style.display = "none";
+                            };
+
+                            // Window click করলে (modal er বাইরে)
+                            window.onclick = function(event) {
+                                if (event.target === modal) {
+                                    modal.style.display = "none";
+                                }
+                            };
+                        }
+                        </script>
+
 
                         <!--<div
                                 class="form-group col-md-1 col-sm-6 col-xs-12 hidden-sm hidden-xs">
@@ -638,9 +647,9 @@ $setting = App\Models\Setting::first();
 
                 </div>
                 </form>
-                
-                
-                
+
+
+
                 <!-- <form action="{{ route('frontend.searchSubmit') }}" method="POST"
                     class="!p-0 od-search-option bg-white search_form">
                     <div class="!p-[50px] w-full">
@@ -824,18 +833,19 @@ $setting = App\Models\Setting::first();
                 <!-- Left Side: Content -->
                 <div class="col-lg-6">
                     <div class="mockup-bg position-relative">
-                        <img src="{{ asset('/assets/frontend_new/images/without-female.png') }}" alt="" class="app-bg" />
+                        <img src="{{ asset('/assets/frontend_new/images/without-female.png') }}" alt=""
+                            class="app-bg" />
                         <img src="{{ asset('assets') }}/svg/app-bg-round.svg" alt="" class="r-set-appbg" />
                     </div>
                     <div class="app-play-stres text-center mt-2 hidden-lg hidden-md">
-                       
+
                     </div>
                 </div>
 
 
                 <div class="col-lg-6">
                     <div class="app-content-aways">
-                        
+
                         <h3 class="!mb-5 !mt-5 " style="color: #505050ff;"> @lang('site.submit_biodata')
                             <br>
                         </h3>
@@ -845,7 +855,7 @@ $setting = App\Models\Setting::first();
                         <span class="completly_free">@lang('site.completly_free')</span>
 
                         <div class="s-away-icn mt-5">
-                            
+
                             <button class="btn btn-info mt-2 create-bio">
 
                                 <a href="{{ route('user.edit_biodata.index') }}"
@@ -913,7 +923,7 @@ $setting = App\Models\Setting::first();
                     <h2> {!! __('site.find_soulmate') !!} <span></span></h2>
                     <h1> {!! __('site.find_soulmate2') !!} </h1>
 
-            
+
                 </div>
 
                 <!-- All card here in this div -->
@@ -922,7 +932,7 @@ $setting = App\Models\Setting::first();
                     <div class="items">
                         <div class="main_profile-sfkl">
                             <div class="contet_last-detilsd contet_last-detilsd_1">
-                               
+
                                 <h4>@lang('site.create_biodata')</h4>
                                 <p>
                                     @lang('site.easy_to_create')<br />
@@ -981,72 +991,77 @@ $setting = App\Models\Setting::first();
 <!-- ========================================================= -->
 <!-- ============== offer section =============== -->
 <!-- ========================================================= -->
- <div class="mega-offer-section">
-<div class="app-away-main-sd">
-    <div class="container">
-        <div class="row app-away-deskcenter">
-            <div class="col-lg-5 mega-offer-mobile">
-                <div class="mockup-bg position-relative">
-                    <img src="{{ asset('assets') }}/newImages/mega-offer.webp" alt="" class="app-bg" />
-                    <img src="{{ asset('assets') }}/svg/app-bg-round.svg" alt="" class="r-set-appbg" />
-                </div>
-            
-            </div>
-
-            <div class="col-lg-7 ">
-                <div class="app-content-aways">
-                    <img width="50" class="mega-offer-img" src="{{ asset('assets') }}/newImages/mega-offer.gif" alt="" class="last_prf-img" />
-                    <spna class="mega-offer"> মেগা অফার </spna>
-
-                    <h2 class="offer-title" style="color: #A51F97;"> @lang('site.ten_exclusive')  </h2>
-                    <h4 style="color: #505050ff;">
-                        @lang('site.offer_details1') <br>
-                        @lang('site.offer_details2')
-
-                    </h4>
-                  
-                   
-                    <div class="s-away-icn">
-
-                        <button class="btn btn-info create-bio">
-
-                            <a href="{{ route('user.edit_biodata.index') }}"
-                                class="col-span-12 sm:col-span-6 bg-button-color !text-white font-bold text-center drop-shadow-none shadow-slate-600 hover:drop-shadow-lg rounded-md gap-2 p-4 w-full h-[60px] flex items-center justify-center max-w-[425px] !no-underline !text-[1rem] sm:!text-[1.2rem]">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="1.2rem" height="1.2rem"
-                                    viewBox="0 0 16 16">
-                                    <path fill="white" d="M7 7V.5h2V7h6.5v2H9v6.5H7V9H.5V7z" />
-                                </svg>@lang('site.create_biodata_now')
-                            </a>
-                        </button>
-                         <!--<a href="{{ route('user.edit_biodata.index') }}" class="btn_register-ht"><img src="{{ asset('assets') }}/svg/login-icon.svg" alt="" /> @lang('site.create_biodata')</a>-->
+<div class="mega-offer-section">
+    <div class="app-away-main-sd">
+        <div class="container">
+            <div class="row app-away-deskcenter">
+                <div class="col-lg-5 mega-offer-mobile">
+                    <div class="mockup-bg position-relative">
+                        <img src="{{ asset('assets') }}/newImages/mega-offer.webp" alt="" class="app-bg" />
+                        <img src="{{ asset('assets') }}/svg/app-bg-round.svg" alt="" class="r-set-appbg" />
                     </div>
-                      <h4> @lang('site.offer_title') </h4>
-                    <p style="color: #A51F97;">
-                        <!-- We are here to help you get the perfect match -->
-                        <!-- @lang('site.offer_last_line') -->
-                    <div class="app-play-stres hidden-sm hidden-xs">
+
+                </div>
+
+                <div class="col-lg-7 ">
+                    <div class="app-content-aways">
+                        <img width="50" class="mega-offer-img" src="{{ asset('assets') }}/newImages/mega-offer.gif"
+                            alt="" class="last_prf-img" />
+                        <spna class="mega-offer"> মেগা অফার </spna>
+
+                        <h2 class="offer-title" style="color: #A51F97;"> @lang('site.ten_exclusive') </h2>
+                        <h4 style="color: #505050ff;">
+                            @lang('site.offer_details1') <br>
+                            @lang('site.offer_details2')
+
+                        </h4>
+
+
+                        <div class="s-away-icn">
+
+                            <button class="btn btn-info create-bio">
+
+                                <a href="{{ route('user.edit_biodata.index') }}"
+                                    class="col-span-12 sm:col-span-6 bg-button-color !text-white font-bold text-center drop-shadow-none shadow-slate-600 hover:drop-shadow-lg rounded-md gap-2 p-4 w-full h-[60px] flex items-center justify-center max-w-[425px] !no-underline !text-[1rem] sm:!text-[1.2rem]">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="1.2rem" height="1.2rem"
+                                        viewBox="0 0 16 16">
+                                        <path fill="white" d="M7 7V.5h2V7h6.5v2H9v6.5H7V9H.5V7z" />
+                                    </svg>@lang('site.create_biodata_now')
+                                </a>
+                            </button>
+                            <!--<a href="{{ route('user.edit_biodata.index') }}" class="btn_register-ht"><img src="{{ asset('assets') }}/svg/login-icon.svg" alt="" /> @lang('site.create_biodata')</a>-->
+                        </div>
+                        <h4> @lang('site.offer_title') </h4>
+                        <h4> ১০টি কানেকশন — পছন্দের ১০টি বায়োডাটার অভিভাবকের সাথে সরাসরি যোগাযোগের সুযোগ, আনলিমিটে
+                            মেয়াদে!
+                        </h4>
+
+                        <p style="color: #A51F97;">
+                            <!-- We are here to help you get the perfect match -->
+                            <!-- @lang('site.offer_last_line') -->
+                        <div class="app-play-stres hidden-sm hidden-xs">
+                        </div>
                     </div>
                 </div>
-            </div>
 
-            <div class="col-lg-5 mega-offer-pc">
-                <div class="mockup-bg position-relative">
-                    <img src="{{ asset('assets') }}/newImages/mega-offer.webp" alt="" class="app-bg" />
-                    <img src="{{ asset('assets') }}/svg/app-bg-round.svg" alt="" class="r-set-appbg" />
+                <div class="col-lg-5 mega-offer-pc">
+                    <div class="mockup-bg position-relative">
+                        <img src="{{ asset('assets') }}/newImages/mega-offer.webp" alt="" class="app-bg" />
+                        <img src="{{ asset('assets') }}/svg/app-bg-round.svg" alt="" class="r-set-appbg" />
+                    </div>
+
                 </div>
-               
+
             </div>
-            
+        </div>
+
+        <div class="app-left-shape">
+            <img src="{{ asset('assets') }}/svg/app-bg-round-1.svg" alt="" />
+        </div>
+        <div class="app-right-shape">
+            <img src="{{ asset('assets') }}/svg/app-bg-round-1.svg" alt="" />
         </div>
     </div>
-
-    <div class="app-left-shape">
-        <img src="{{ asset('assets') }}/svg/app-bg-round-1.svg" alt="" />
-    </div>
-    <div class="app-right-shape">
-        <img src="{{ asset('assets') }}/svg/app-bg-round-1.svg" alt="" />
-    </div>
-</div>
 </div>
 <!-- ========================================================= -->
 <!-- =============== Offer section =================== -->
@@ -1102,30 +1117,31 @@ $setting = App\Models\Setting::first();
     <div class="container">
         <div class="row app-away-deskcenter">
 
-        <!-- Left Side: Image -->
+            <!-- Left Side: Image -->
             <div class="col-lg-6">
                 <div class="mockup-bg position-relative">
-                    <img  width="90%" src="{{ asset('assets') }}/newImages/money-back-guaranteed.webp" alt="" class="app-bg" />
+                    <img width="90%" src="{{ asset('assets') }}/newImages/money-back-guaranteed.webp" alt=""
+                        class="app-bg" />
                     <img src="{{ asset('assets') }}/svg/app-bg-round.svg" alt="" class="r-set-appbg" />
                 </div>
                 <div class="app-play-stres text-center mt-2 hidden-lg hidden-md">
-                    
+
                 </div>
             </div>
             <div class="col-lg-6">
                 <div class="app-content-aways">
-                    <h2 style="color: #FF2ADE;"> @lang('site.moneyback_title')         </h2>
-                   
-                       <h3 style="color: #505050ff;"> @lang('site.moneyback_details1') </h3> <br>
-                    
+                    <h2 style="color: #FF2ADE;"> @lang('site.moneyback_title') </h2>
+
+                    <h3 style="color: #505050ff;"> @lang('site.moneyback_details1') </h3> <br>
+
                     </h4>
                     <div class="s-away-icn">
-                       
+
                         <button class="btn btn-info how-to-create-bio">
 
                             <a href="/refund_policy"
                                 class="col-span-12 sm:col-span-6 bg-button-color !text-white font-bold text-center drop-shadow-none shadow-slate-600 hover:drop-shadow-lg rounded-md gap-2 p-4 w-full h-[60px] flex items-center justify-center max-w-[425px] !no-underline !text-[1rem] sm:!text-[1.2rem]">
-                                
+
                                 </svg>@lang('site.know_more')
                             </a>
                         </button>
@@ -1138,7 +1154,7 @@ $setting = App\Models\Setting::first();
                 </div>
             </div>
 
-            
+
         </div>
     </div>
 
@@ -1160,67 +1176,67 @@ $setting = App\Models\Setting::first();
 
 <!-- Section 2: Find your Special Someone -->
 <!-- Find your Special Someone section start -->
- <div class="why-we-ara">
-<div class="find-someone-section">
-    <div class="container">
-        <!-- Section Title -->
-       
-        <!-- Steps -->
-        <div class="row" style="margin-top: 50px">
-            <!-- Step 1: Create Profile -->
-            <div class="col-md-3">
-                <div class="step-box">
-                    <div class="icon-container">
-                        <img src="{{ asset('assets') }}/svg/find1.svg" alt="Create Profile Icon" />
+<div class="why-we-ara">
+    <div class="find-someone-section">
+        <div class="container">
+            <!-- Section Title -->
+
+            <!-- Steps -->
+            <div class="row" style="margin-top: 50px">
+                <!-- Step 1: Create Profile -->
+                <div class="col-md-3">
+                    <div class="step-box">
+                        <div class="icon-container">
+                            <img src="{{ asset('assets') }}/svg/find1.svg" alt="Create Profile Icon" />
+                        </div>
+                        <h3>@lang('site.perfect_match_title')</h3>
+
+                        <p>@lang('site.perfect_match')</p>
                     </div>
-                    <h3>@lang('site.perfect_match_title')</h3>
-                    
-                    <p>@lang('site.perfect_match')</p>
                 </div>
-            </div>
 
-            <!-- Step 2: Browse Profiles -->
-            <div class="col-md-3">
-                <div class="step-box">
-                    <div class="icon-container">
-                        <img src="{{ asset('assets') }}/svg/find2.svg" alt="Browse Profiles Icon" />
+                <!-- Step 2: Browse Profiles -->
+                <div class="col-md-3">
+                    <div class="step-box">
+                        <div class="icon-container">
+                            <img src="{{ asset('assets') }}/svg/find2.svg" alt="Browse Profiles Icon" />
+                        </div>
+                        <!-- <h3> L3ayer Verified</h3> -->
+                        <h3> @lang('site.verify_title') </h3>
+
+                        <p>@lang('site.verify')</p>
                     </div>
-                    <!-- <h3> L3ayer Verified</h3> -->
-                    <h3> @lang('site.verify_title') </h3>
-                   
-                    <p>@lang('site.verify')</p>
                 </div>
-            </div>
 
-            <!-- Step 3: Connect -->
-            <div class="col-md-3">
-                <div class="step-box">
-                    <div class="icon-container">
-                        <img src="{{ asset('assets') }}/svg/final-secure.png" alt="Secure Icon" />
+                <!-- Step 3: Connect -->
+                <div class="col-md-3">
+                    <div class="step-box">
+                        <div class="icon-container">
+                            <img src="{{ asset('assets') }}/svg/final-secure.png" alt="Secure Icon" />
+                        </div>
+                        <h3>@lang('site.secure_title')</h3>
+
+                        <p>@lang('site.secure')</p>
                     </div>
-                    <h3>@lang('site.secure_title')</h3>
-                   
-                    <p>@lang('site.secure')</p>
                 </div>
-            </div>
 
-            <!-- Step 4: Interact -->
-            <div class="col-md-3">
-                <div class="step-box">
-                    <div class="icon-container">
+                <!-- Step 4: Interact -->
+                <div class="col-md-3">
+                    <div class="step-box">
+                        <div class="icon-container">
 
-                        <img src="{{ asset('assets') }}/svg/halal_logo1.png" alt="halal Icon" />
+                            <img src="{{ asset('assets') }}/svg/halal_logo1.png" alt="halal Icon" />
+                        </div>
+                        <!-- <h3>100% Halal</h3> -->
+                        <h3>@lang('site.halal_title')</h3>
+
+                        <p>@lang('site.halal')</p>
                     </div>
-                    <!-- <h3>100% Halal</h3> -->
-                    <h3>@lang('site.halal_title')</h3>
-                    
-                    <p>@lang('site.halal')</p>
                 </div>
-            </div>
 
+            </div>
         </div>
     </div>
-</div>
 </div>
 <!-- Find your Special Someone section end -->
 
@@ -1263,14 +1279,8 @@ $setting = App\Models\Setting::first();
 <!-- ---progress bottom to top--- -->
 
 <div class="progress-wrap">
-    <svg
-        class="progress-circle svg-content"
-        width="100%"
-        height="100%"
-        viewBox="-1 -1 102 102">
-        <path
-            d="M50,1 a49,49 0 0,1 0,98 a49,49 0 0,1 0,-98"
-            style="
+    <svg class="progress-circle svg-content" width="100%" height="100%" viewBox="-1 -1 102 102">
+        <path d="M50,1 a49,49 0 0,1 0,98 a49,49 0 0,1 0,-98" style="
             transition: stroke-dashoffset 10ms linear;
             stroke-dasharray: 307.919, 307.919;
             stroke-dashoffset: 307.919;
@@ -1310,26 +1320,26 @@ $setting = App\Models\Setting::first();
 <!--<div class="modal fade" id="videoModal" tabindex="-1" aria-labelledby="videoModalLabel" aria-hidden="true">-->
 <!--  <div class="modal-dialog modal-dialog-centered modal-lg">-->
 <!--    <div class="modal-content">-->
-      
+
 <!--      <div class="modal-header">-->
 <!--        <h5 class="modal-title" id="videoModalLabel">Announcement</h5>-->
 <!--        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>-->
 <!--      </div>-->
-      
+
 <!--      <div class="modal-body text-center">-->
 <!--        <video controls autoplay muted loop style="width:100%; border-radius:10px;">-->
 <!--            <source src="{{ asset('video/announcement.mp4') }}" type="video/mp4" />-->
 <!--            Your browser does not support the video tag.-->
 <!--        </video>-->
-        <!-- চাইলে নিচে extra টেক্সট দিতে পারেন -->
-        <!-- <p class="mt-3">মুসলিম বিয়েতে আপনাকে স্বাগতম।</p> -->
+<!-- চাইলে নিচে extra টেক্সট দিতে পারেন -->
+<!-- <p class="mt-3">মুসলিম বিয়েতে আপনাকে স্বাগতম।</p> -->
 <!--      </div>-->
-      
+
 <!--    </div>-->
 <!--  </div>-->
 
 
-<div class="login-modal-overlay" id="loginModal" >
+<div class="login-modal-overlay" id="loginModal">
     <div class="video-modal-content">
         Modal Header
         <div class="modal-header">
@@ -1357,28 +1367,22 @@ $setting = App\Models\Setting::first();
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 <script>
-    $(document).ready(function() {
-        $('.select2').select2({
-            placeholder: "@lang('site.please_select')",
-            allowClear: true,
-            multiple: true,
-        });
+$(document).ready(function() {
+    $('.select2').select2({
+        placeholder: "@lang('site.please_select')",
+        allowClear: true,
+        multiple: true,
     });
-    
-    
+});
 </script>
 
 
 <script>
-document.getElementById('closeModalBtn').addEventListener('click', function () {
+document.getElementById('closeModalBtn').addEventListener('click', function() {
     document.getElementById('videoModal').style.display = 'none';
 });
-
-
 </script>
 
 
 
 @endsection
-
-
