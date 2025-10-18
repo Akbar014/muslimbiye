@@ -1031,10 +1031,12 @@ $setting = App\Models\Setting::first();
                             </button>
                             <!--<a href="{{ route('user.edit_biodata.index') }}" class="btn_register-ht"><img src="{{ asset('assets') }}/svg/login-icon.svg" alt="" /> @lang('site.create_biodata')</a>-->
                         </div>
-                        <h4> @lang('site.offer_title') </h4>
-                        <h4> ১০টি কানেকশন — পছন্দের ১০টি বায়োডাটার অভিভাবকের সাথে সরাসরি যোগাযোগের সুযোগ, আনলিমিটে
+                        <h4 style="color: #505050ff;"> ১০টি কানেকশন — পছন্দের ১০টি বায়োডাটার অভিভাবকের সাথে সরাসরি যোগাযোগের সুযোগ, আনলিমিটে
                             মেয়াদে!
                         </h4>
+
+                        <h4> @lang('site.offer_title') </h4>
+
 
                         <p style="color: #A51F97;">
                             <!-- We are here to help you get the perfect match -->
