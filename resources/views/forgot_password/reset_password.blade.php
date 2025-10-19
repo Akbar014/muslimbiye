@@ -15,7 +15,7 @@
         <label class="od-search-option-label mb-1" for="email">@lang('site.email_address')</label>
         <div class="relative od-search-option-input">
             <input
-                id="email" type="email" name="email"
+                id="email" type="text" name="email"
                 value="{{ old('email', $email ?? '') }}"
                 placeholder="@lang('site.enter_email')"
                 class="od-biodata-search-control outline-none h-full w-full !px-3 pr-12

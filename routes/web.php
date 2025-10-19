@@ -7,6 +7,8 @@ use App\Http\Controllers\Backend\Admin\DatabaseReform;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Str;
+use App\Services\GoogleAnalyticsClient;
 
 // Backend
 
@@ -110,6 +112,33 @@ Route::group(
         require base_path('routes/frontend/frontend.php');
     }
 );
+
+
+
+Route::get('/ga/self-test', function () {
+    $cfg = config('google.analytics.credentials');
+
+    $report = [
+        'config_value'      => $cfg,
+        'is_absolute'       => is_string($cfg) && preg_match('~^([a-zA-Z]:\\\\|/)~', $cfg) ? 'yes' : 'no',
+        'resolved_path'     => preg_match('~^([a-zA-Z]:\\\\|/)~', $cfg) ? $cfg : storage_path(trim($cfg, '/\\')),
+        'file_exists'       => file_exists(preg_match('~^([a-zA-Z]:\\\\|/)~', $cfg) ? $cfg : storage_path(trim($cfg, '/\\'))),
+        'is_readable'       => is_readable(preg_match('~^([a-zA-Z]:\\\\|/)~', $cfg) ? $cfg : storage_path(trim($cfg, '/\\'))),
+        'property_id'       => config('google.analytics.property_id'),
+        'php_sapi'          => PHP_SAPI,
+        'cwd'               => getcwd(),
+    ];
+
+    try {
+        $client = GoogleAnalyticsClient::make();
+        $report['client_ok'] = 'yes';
+    } catch (\Throwable $e) {
+        $report['client_ok'] = 'no';
+        $report['error'] = $e->getMessage();
+    }
+
+    return response()->json($report);
+});
 
 // Route::get('/test', function () {
 //     return sendSms('8801768999721', 'Hello! This is a test SMS using PHP.');

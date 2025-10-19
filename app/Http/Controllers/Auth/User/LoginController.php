@@ -149,7 +149,7 @@ class LoginController extends Controller
    public function existingUserLogin(Request $request)
    {
       $rules = [
-         'password' => 'required|string|min:6',
+         'password' => 'required|string|min:8',
          'phone' => 'required|string|max:15|regex:/^[0-9+]+$/', // Adjust regex as needed
          'email' => 'required|string|email|max:255', // Email validation
       ];
