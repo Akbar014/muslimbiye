@@ -1026,15 +1026,18 @@ $setting = App\Models\Setting::first();
                                     <svg xmlns="http://www.w3.org/2000/svg" width="1.2rem" height="1.2rem"
                                         viewBox="0 0 16 16">
                                         <path fill="white" d="M7 7V.5h2V7h6.5v2H9v6.5H7V9H.5V7z" />
-                                    </svg>@lang('site.create_biodata_now')
+                                    </svg> @lang('site.create_biodata_now')
                                 </a>
                             </button>
                             <!--<a href="{{ route('user.edit_biodata.index') }}" class="btn_register-ht"><img src="{{ asset('assets') }}/svg/login-icon.svg" alt="" /> @lang('site.create_biodata')</a>-->
                         </div>
-                        <h4> @lang('site.offer_title') </h4>
-                        <h4> ১০টি কানেকশন — পছন্দের ১০টি বায়োডাটার অভিভাবকের সাথে সরাসরি যোগাযোগের সুযোগ, আনলিমিটে
+                        <h4 style="color: #505050ff;"> ১০টি কানেকশন — পছন্দের ১০টি বায়োডাটার অভিভাবকের সাথে সরাসরি
+                            যোগাযোগের সুযোগ, আনলিমিটে
                             মেয়াদে!
                         </h4>
+
+                        <h4> @lang('site.offer_title') </h4>
+
 
                         <p style="color: #A51F97;">
                             <!-- We are here to help you get the perfect match -->
