@@ -1,8 +1,0 @@
-[13-Aug-2025 21:11:49 UTC] PHP Fatal error:  Uncaught Error: Call to undefined function env() in /home/muslimbi/muslimbiye.com.bd/config/services.php:18
-Stack trace:
-#0 {main}
-  thrown in /home/muslimbi/muslimbiye.com.bd/config/services.php on line 18
-[13-Aug-2025 21:12:27 UTC] PHP Fatal error:  Uncaught Error: Call to undefined function env() in /home/muslimbi/muslimbiye.com.bd/config/database.php:18
-Stack trace:
-#0 {main}
-  thrown in /home/muslimbi/muslimbiye.com.bd/config/database.php on line 18

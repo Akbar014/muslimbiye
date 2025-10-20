@@ -7,9 +7,9 @@
         <div class="od-search-fields flex flex-col min-w-96 bg-white !p-10 rounded-md shadow-sm drop-shadow-md ">
             <div class="od-search-option-label"> @lang('site.email_address')</div>
             <div class="od-search-option-input">
-                <input type="email"
+                <input type="text"
                     class="od-biodata-search-control outline-none h-full w-full !px-3 {{ $errors->has('email') ? 'border-red-500' : 'border-[#d5d5d5]' }} border-[1px] rounded-[10px]"
-                    value="{{ old('email') }}" name="email" placeholder="@lang('site.your_email_address')">
+                    value="{{ old('email') }}" name="email" placeholder="@lang('site.your_email_or_phone_address')">
             </div>
             @error('email')
                 <span class="text-red-600 inline-block !mt-1" role="alert">
