@@ -1,3 +1,37 @@
+# Environment
 .env
-.htaccess
-vendor
+.env.*
+!.env.example
+
+# Dependencies
+/vendor/
+node_modules/
+
+# Storage & Cache
+/storage/
+!/storage/app/public/
+!/storage/*.gitignore
+
+/bootstrap/cache/
+!/bootstrap/cache/.gitignore
+
+# Public (compiled assets, symlinks, builds)
+public/hot
+/public/storage
+/public/mix-manifest.json
+/public/js/
+public/css/
+public/build/
+public/vendor/
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# IDE / System
+.idea/
+.vscode/
+*.DS_Store
+Thumbs.db

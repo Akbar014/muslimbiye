@@ -37,13 +37,26 @@
                 </span>
             @enderror
             {{-- <a href="#" class="text-sm text-secondary-color-alter !no-underline">@lang('site.forgot_password')</a> --}}
-            <div class="!mt-2">
+
+                        {{-- <a href="{{ route('forgot.password') }}"
+               class="text-sm text-secondary-color font-medium hover:underline transition-all duration-150">
+               @lang('site.forgot_password')
+            </a> --}}
+
+            <div class="!mt-2 flex items-center justify-between">
                 <button type="submit"
                     class="bg-secondary-color-alter text-white !py-2 !px-3 rounded-sm cursor-pointer drop-shadow-none !no-underline hover:drop-shadow-lg shadow-slate-400 duration-100 group">
                     @lang('site.continue')
                     <i class="fa fa-arrow-right !ms-0 group-hover:ms-1 duration-100" aria-hidden="true"></i>
                 </button>
+
+                <a style="color: #fff" href="{{ route('forgot.password') }}"
+                class="bg-secondary-color text-white !py-2 !px-3 rounded-sm cursor-pointer drop-shadow-none hover:drop-shadow-lg shadow-slate-400 duration-100 group !no-underline ms-4 inline-block">
+                @lang('site.forgot_password')
+                {{-- <i class="fa fa-unlock-alt" aria-hidden="true"></i> --}}
+                </a>
             </div>
+
         </div>
     </form>
 @endsection

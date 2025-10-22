@@ -28,18 +28,11 @@
     />
 
     <style>
-      .progress-wrap::after {
-        font-family: "Font Awesome\ 5 pro" !important;
-      }
       .alert-success {
         color: #3c763d !important;
         background-color: #dff0d8 !important;
         border-color: #d6e9c6 !important;
       }
-      
-      
-      
-      
     </style>
 
 
