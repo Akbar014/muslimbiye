@@ -31,6 +31,7 @@ class UserDashboardController extends Controller
     public function index()
     {
         $incomplete_biodata = Biodata::where(['user_id' => Auth::guard("user")->user()->id, 'deleted' => "0", 'admin_created' => '0'])->first();
+
         $user = Auth::guard('user')->user();
         $coupon_usages = CouponUsage::where(['user_id' => $user->id])->first();
         return view('frontend_new.user.dashboard.index', compact('incomplete_biodata', 'coupon_usages'));
