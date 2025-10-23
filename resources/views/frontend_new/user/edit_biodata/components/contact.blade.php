@@ -7,7 +7,7 @@
             $routeUrl =
                 $biodata->admin_created == '1' ? route('admin.biodata.contact') : route('user.edit_biodata.contact');
         @endphp
-        <form action="{{ $routeUrl }}" method="POST" class="od-row od-justify-content-spaceBetween">
+        <form action="{{ $routeUrl }}" method="POST" class="od-row od-justify-content-spaceBetween" id="contactForm">
             @csrf
             <div class="bride_groom_bride_open od-form-group-container od-conditional-field-4 od-conditional-field-id-2 od-biodata-conditional-field-track required-field"
                 style="display: none">
@@ -161,7 +161,7 @@
     padding: 20px; 
     border-radius: 8px; 
     text-align: center;
-    width: 400px;
+    width: 500px;
     max-width: 90%;
     box-shadow: 0 4px 15px rgba(0,0,0,0.3);
 }
@@ -176,50 +176,96 @@
 </style>
 
 
- <div id="approvalModal" class="custom-modal">
-            <div class="custom-modal-content">
-                <span id="closeModalBtn" class="close-btn">&times;</span>
-                <h1 style="
-    background: linear-gradient(217deg, #1f0785 0%, #af2199 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-">
-    ভেরিফিকেশন সতর্কতা
+<div id="approvalModal" class="custom-modal">
+  <div class="custom-modal-content">
+    <span id="closeModalBtn" class="close-btn">&times;</span>
 
-</h1>
+    <h1 style="
+      background: linear-gradient(217deg, #1f0785 0%, #af2199 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    ">
+      ভেরিফিকেশন সতর্কতা
+    </h1>
 
-                <p style="color: black";> অনুগ্রহ করে অভিভাবকের সঠিক তথ্য ও বৈধ যোগাযোগ নম্বর প্রদান করুন।</p>
-                <p style="color: black;">!!!  ভুল বা অসম্পূর্ণ তথ্য থাকলে বায়োডাটা এপ্রুভ করা হবেনা !!!<p>
-                <!--<a href="{{ route('user.edit_biodata.index') }}" class="bg-[#631a53] !no-underline !text-white lg:w-full w-full h-10 !px-4 text-center  text-[1.2rem] md:text-[1rem] drop-shadow-none shadow-slate-600 hover:drop-shadow-lg rounded-md text-xl flex items-center justify-center gap-2">-->
-                <!--    <svg xmlns="http://www.w3.org/2000/svg" width="1.1rem" height="1.1rem" viewBox="0 0 16 16">-->
-                <!--        <path fill="white" d="M7 7V.5h2V7h6.5v2H9v6.5H7V9H.5V7z"></path>-->
-                <!--    </svg>বায়োডাটা তৈরি করুন-->
-                <!--</a>-->
-                   
-            </div>
-        </div>
+    <p style="color:black;">📜 <strong>মুসলিম বিয়ে-তে বায়োডাটা সাবমিট করার জন্য আন্তরিক মোবারকবাদ!</strong> 🌸</p>
+    <p style="color:black;">🌸 ইনশাআল্লাহ ০৩ কার্যদিবসের মধ্যে ভেরিফিকেশন সম্পন্ন করে আপনার বায়োডাটা এপ্রুভ করা হবে।</p>
+    <p style="color:black;">🌸 এপ্রুভ হলে আপনার মেইলে নোটিফিকেশন যাবে এবং ড্যাশবোর্ডেও দেখতে পারবেন।</p>
+    <p style="color:black;">✨ অনুগ্রহ করে আপনার মোবাইল নাম্বার, অভিভাবকের সম্মতি ও নাম্বার সক্রিয় রাখুন — <strong>এটাই হতে পারে আপনার বরকতময় জীবনের প্রথম পদক্ষেপ ইনশাআল্লাহ।</strong> 🕊️</p>
+    <p style="color:black;">জাযাকাল্লাহু খাইরান। 💝</p>
+
+<div style="margin-top: 5px" class="mt-4 flex justify-center gap-3">
+  <button
+    type="button"
+    id="confirmSubmitBtn"
+    style="padding: 8px 20px; color:#fff; background-color: #28a745; border: none; border-radius: 5px; cursor: pointer;"
+  >
+    সাবমিট নিশ্চিত করুন
+  </button>
+
+  <button
+    type="button"
+    id="cancelModalBtn"
+     style="padding: 8px 20px; color:#fff; background-color: rgb(226, 50, 50); border: none; border-radius: 5px; cursor: pointer;"
+  >
+    পরে করবো
+  </button>
+</div>
+
+    </div>
+  </div>
+</div>
+
+
+
 <script>
 document.addEventListener("DOMContentLoaded", function () {
-    const modal = document.getElementById("approvalModal");
-    const closeBtn = document.getElementById("closeModalBtn");
-    const input = document.getElementById("gurdian_name");
-    let modalShown = false; য
+  const form      = document.getElementById("contactForm");
+  const modal     = document.getElementById("approvalModal");
+  const closeBtn  = document.getElementById("closeModalBtn");
+  const confirmBtn= document.getElementById("confirmSubmitBtn");
+  const cancelBtn = document.getElementById("cancelModalBtn");
 
-    input.addEventListener("input", function () {
-        if (!modalShown && this.value.trim() !== "") {
-            modal.style.display = "flex";
-            modalShown = true; 
-        }
-    });
+  if (!form || !modal || !closeBtn || !confirmBtn || !cancelBtn) return;
 
-    closeBtn.onclick = function () {
-        modal.style.display = "none";
-    };
+  let allowRealSubmit = false;
 
-    window.onclick = function (event) {
-        if (event.target === modal) {
-            modal.style.display = "none";
-        }
-    };
+  // Intercept form submit
+  form.addEventListener("submit", function (e) {
+    if (allowRealSubmit) return;   // already confirmed; let it pass
+
+    e.preventDefault();
+
+    // if HTML5 required fields invalid, show browser prompts
+    if (!form.checkValidity()) {
+      form.reportValidity();
+      return;
+    }
+
+    // Show modal
+    modal.style.display = "flex";
+  });
+
+  // Confirm => actually submit
+  confirmBtn.addEventListener("click", function () {
+    modal.style.display = "none";
+    allowRealSubmit = true;
+    form.submit();
+  });
+
+  // Cancel/Close => hide only
+  function hideModal() { modal.style.display = "none"; }
+  cancelBtn.addEventListener("click", hideModal);
+  closeBtn.addEventListener("click", hideModal);
+
+  // Click outside to close
+  window.addEventListener("click", function (e) {
+    if (e.target === modal) hideModal();
+  });
+
+  // ESC to close
+  window.addEventListener("keydown", function (e) {
+    if (e.key === "Escape" && modal.style.display === "flex") hideModal();
+  });
 });
 </script>

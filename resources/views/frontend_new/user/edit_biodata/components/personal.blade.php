@@ -365,13 +365,24 @@
                         <img class="w-20 max-h-20 hidden cursor-pointer" title="Click To Remove" id="photo_viewer"
                             accept="image/*">
                     </div>
-                    @if (isset($personal) && $personal->photo)
+                    {{-- @if (isset($personal) && $personal->photo)
                     <h2>Prev image</h2>
                         <div class="mt-5">
                             <div>@lang('site.previous_image')</div>
                             <img class="w-20 max-h-20" src="{{ asset('storage/app/public/' . $personal->photo) }}">
                         </div>
+                    @endif --}}
+
+                    @if (isset($personal) && $personal->photo)
+                        <h2>Prev image</h2>
+                        <div class="mt-5">
+                            <div>@lang('site.previous_image')</div>
+                            <img class="w-20 max-h-20 rounded-md border border-gray-300"
+                                src="{{ Storage::url($personal->photo) }}"
+                                alt="Previous Photo">
+                        </div>
                     @endif
+
                 </div>
 
                 <div class="od-field-desc od-pt-10">

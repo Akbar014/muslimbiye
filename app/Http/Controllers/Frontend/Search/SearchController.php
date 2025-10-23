@@ -23,6 +23,7 @@ class SearchController extends Controller
 
     public function search(Request $request)
     {
+        // dd($request->all());
         if ($request->session()->has('search')) {
             $searchQuery = session()->get('search');
             if ($searchQuery['biodata_no']) {
@@ -82,6 +83,7 @@ class SearchController extends Controller
         ]);
         return redirect()->route('frontend.search');
     }
+    
     public function search_slug($slug)
     {
         $result = BioData::where('bride_groom', $slug)->where('status', '1')->paginate(6);

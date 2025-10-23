@@ -474,6 +474,7 @@ return [
         'incomplete' => 'Incomplete',
         'pending' => 'Pending',
         'approved' => 'Approved',
+        'postpont' => 'Postpont',
         'my_biodata' => 'My Biodata',
         'edit_biodata' => 'Edit Biodata',
         'favourite_list' => 'Favourite List',
