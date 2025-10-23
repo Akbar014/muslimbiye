@@ -72,9 +72,9 @@
 
                                                 <td class="align-middle">
                                                     @if ($pending->general()->bride_groom == 'groom')                           
-                                                        {{ $pending->contact()->groom_name }}
+                                                        {{ $pending->contact()->groom_name ?? 'N/A' }}
                                                     @else                                    
-                                                        {{ $pending->contact()->bride_name }}
+                                                        {{ $pending->contact()->bride_name ?? 'N/A' }}
                                                     @endif
                                                 </td>
 
@@ -85,8 +85,8 @@
                                                 </td>
 
 
-                                                <td class="align-middle">{{ $pending->family()->fathers_name }}</td>
-                                                <td class="align-middle">{{ $pending->family()->mothers_name }}</td>
+                                                <td class="align-middle">{{ $pending->family()->fathers_name ?? 'N/A' }}</td>
+                                                <td class="align-middle">{{ $pending->family()->mothers_name ?? 'N/A' }}</td>
 
                                                 <td class="align-middle">
                                                     {{ $pending->postponed_at
@@ -110,12 +110,27 @@
 
                                                         {{-- Status dropdown (safe inside responsive table) --}}
                                                         <div class="dropdown position-static d-inline-block mr-1">
-                                                            <button class="btn btn-sm btn-primary dropdown-toggle"
+
+                                                            {{-- <button class="btn btn-sm btn-primary dropdown-toggle"
                                                                 type="button" id="dd-{{ $pending->id }}"
                                                                 data-toggle="dropdown" aria-haspopup="true"
                                                                 aria-expanded="false">
                                                                 Status
+                                                            </button> --}}
+
+
+
+                                                            <button class="btn btn-sm btn-primary dropdown-toggle"
+                                                                    type="button"
+                                                                    id="dd-{{ $pending->id }}"
+                                                                    data-toggle="dropdown"
+                                                                    data-display="static"
+                                                                    data-boundary="window"
+                                                                    aria-haspopup="true"
+                                                                    aria-expanded="false">
+                                                            Status
                                                             </button>
+
 
                                                             <div class="dropdown-menu dropdown-menu-right shadow"
                                                                 aria-labelledby="dd-{{ $pending->id }}"
@@ -183,8 +198,8 @@
                                                             @php
                                                             $postponeUrl = route('admin.backend.admin.biodata.postpone', $pending->id);
                                                             $displayName = $pending->general()->bride_groom == 'groom'
-                                                                ? $pending->contact()->groom_name
-                                                                : $pending->contact()->bride_name;
+                                                                ? $pending->contact()->groom_name ?? 'N/A'
+                                                                : $pending->contact()->bride_name ?? 'N/A';
                                                             @endphp
 
                                                             <button type="button"
@@ -502,11 +517,18 @@ $(function () {
       });
   });
 
-  // Modal cleanups
-  $('#postponeModal').on('hidden.bs.modal', function () {
-    $('#postponeForm')[0].reset();
-    $('body').removeClass('modal-open');
-    $('.modal-backdrop').remove();
+});
+
+
+$(function () {
+  $(document).on('click', '.dropdown-menu, .dropdown-menu form, .dropdown-menu .dropdown-item', function (e) {
+    e.stopPropagation();
+  });
+
+  $(document).on('submit', '.dropdown-menu form', function () {
+    const $btn = $(this).find('button[type=submit]');
+    $btn.prop('disabled', true)
+        .append(' <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>');
   });
 });
 </script>
