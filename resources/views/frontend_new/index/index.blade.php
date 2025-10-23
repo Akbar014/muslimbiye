@@ -57,6 +57,9 @@ $setting = App\Models\Setting::first();
         <div class="row">
             <div class="col-md-1"></div>
             <div class="col-md-10 col-sm-12 col-xs-12">
+                
+                <h2 class="!mb-5 !mt-5 text-center" style="color: #FF2ADE;"> উপযুক্ত জীবনসঙ্গী  <span style="color:#2F4AB3;">খুঁজে নিন</span><br></h2>
+
                 <div class="search_registerBG">
                     <form action="{{ route('frontend.searchSubmit') }}" method="post">
                         @csrf
