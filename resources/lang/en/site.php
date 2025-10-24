@@ -815,7 +815,7 @@ return [
         'apply_coupon'=>'Apply Coupon',
         'coupon_message' => 'Congratulations! You have received <b>:connection_amount free connections</b>, which you can use to view your preferred :connection_amount biodata. <b>:connection_remain are remaining</b>!',
         'forgot_password' => 'Forgot Password?',
-        'send_reset_link' => 'Send Reset Link',
+        'send_reset_link' => 'Send Otp',
         'reset_password' => 'Reset Password',
         'email_address' => 'Email or Phone Number',
         'enter_email' => 'Enter your email address',
