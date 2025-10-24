@@ -115,7 +115,7 @@ class BiodataStatusController extends Controller
         $biodata->postponed_by   = Auth::id(); // admin id
         $biodata->save();
 
-        return back()->with('success', 'Biodata postponed with note.');
+        return redirect('admin/dashboard')->with('success', 'Biodata postponed with note.');
     }
 
     /**

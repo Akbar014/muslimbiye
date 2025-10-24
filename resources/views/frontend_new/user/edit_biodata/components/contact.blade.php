@@ -19,7 +19,7 @@
                 <div class="od-form-group-input od-custom-text_box">
                     <input type="text" name="bride_name" id="bride_name"
                         value="{{ isset($contact) ? $contact->bride_name : '' }}" class="od-field-type__textbox"
-                        placeholder="" required />
+                         required />
                 </div>
 
                 <div class="od-field-desc od-pt-10">
@@ -37,7 +37,7 @@
                 <div class="od-form-group-input od-custom-text_box">
                     <input type="text" name="groom_name" id="groom_name"
                         value="{{ isset($contact) ? $contact->groom_name : '' }}" class="od-field-type__textbox"
-                        placeholder="" required />
+                        required />
                 </div>
 
                 <div class="od-field-desc od-pt-10">
@@ -56,7 +56,7 @@
                 <div class="od-form-group-input od-custom-text_box">
                     <input type="text" name="gurdian_name" id="gurdian_name"
                         value="{{ isset($contact) ? $contact->gurdian_name : '' }}" class="od-field-type__textbox"
-                        placeholder=""  required />
+                        required />
                 </div>
             </div>
 
@@ -67,11 +67,13 @@
                         <span class="od-required-label">*</span></label>
                 </div>
 
+
                 <div class="od-form-group-input od-custom-text_box">
-                    <input type="text" name="gurdian_phone" id="gurdian_phone"
-                        value="{{ isset($contact) ? $contact->gurdian_phone : '' }}" class="od-field-type__textbox"
-                        placeholder="01700-000000" required />
+                        <input type="text" name="gurdian_phone" id="gurdian_phone"
+                            value="{{ $contact->gurdian_phone ?? '' }}" class="od-field-type__textbox"
+                            required />
                 </div>
+
 
                 <div class="od-field-desc od-pt-10">
                     <p>
@@ -94,7 +96,7 @@
                 <div class="od-form-group-input od-custom-text_box">
                     <input type="text" name="gurdian_whatsapp" id="gurdian_whatsapp"
                         value="{{ isset($contact) ? $contact->gurdian_whatsapp : '' }}"
-                        class="od-field-type__textbox !font-normal" placeholder="01700-000000" required />
+                        class="od-field-type__textbox !font-normal" required />
                 </div>
 
                 <div class="od-field-desc od-pt-10">
@@ -199,12 +201,12 @@
     </p>
 
     <p>🌸 এপ্রুভ হলে আপনার মেইলে <span style="color:#000;font-weight:700">নোটিফিকেশন</span> যাবে এবং 
-    <span style="font-weight:700">ড্যাশবোর্ডেও দেখতে পারবেন</span>।
+    <span style="font-weight:700"><span style="color:#000;font-weight:700">ড্যাশবোর্ডেও</span> দেখতে পারবেন</span>।
     </p>
 
     <p>✨ অনুগ্রহ করে 
-    <span style="font-weight:700">আপনার মোবাইল নাম্বার, অভিভাবকের সম্মতি ও নাম্বার সক্রিয় রাখুন — 
-    এটাই হতে পারে আপনার বরকতময় জীবনের প্রথম পদক্ষেপ ইনশাআল্লাহ।</span> 🕊️
+    <span style="font-weight:700">আপনার <span style="color:#000;font-weight:700"> মোবাইল নাম্বার, অভিভাবকের সম্মতি ও নাম্বার সক্রিয় রাখুন</span> — 
+    এটাই হতে পারে আপনার বরকতময় জীবনের প্রথম পদক্ষেপ <span style="color:#000;font-weight:700"> ইনশাআল্লাহ। </span> </span> 🕊️
     </p>
 
     <p><span style="color:#000;font-weight:700">জাযাকাল্লাহু খাইরান।</span> 💝</p>
