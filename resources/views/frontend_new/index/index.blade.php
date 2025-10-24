@@ -58,7 +58,8 @@ $setting = App\Models\Setting::first();
             <div class="col-md-1"></div>
             <div class="col-md-10 col-sm-12 col-xs-12">
                 
-                <h2 class="!mb-5 !mt-5 text-center" style="color: #FF2ADE; margin-bottom:10px"> উপযুক্ত জীবনসঙ্গী  <span style="color:#2F4AB3;">খুঁজে নিন</span><br></h2>
+                <h2 class="!mb-5 !mt-5 text-center" style="color: #FF2ADE; margin-bottom:15px; font-family: 'Hind Siliguri';
+    font-weight: 700;"> উপযুক্ত জীবনসঙ্গী  <span style="color:#2F4AB3;">খুঁজে নিন</span><br></h2>
 
                 <div class="search_registerBG">
                     <form action="{{ route('frontend.searchSubmit') }}" method="post">
@@ -1218,23 +1219,7 @@ $setting = App\Models\Setting::first();
 <!--  </div>-->
 
 
-<div class="login-modal-overlay" id="loginModal">
-    <div class="video-modal-content">
-        Modal Header
-        <div class="modal-header">
-            <div>
-                <span class="announcement-text">Announcement</span>
-            </div>
-            <button class="modal-close-btn" id="closeModalBtn">&times;</button>
-        </div>
 
-        Modal Video
-        <div class="modal-video-container">
-            <p>মুসলিম বিয়েতে আপনাকে স্বাগতম।</p>
-            <h3>বায়োডাটা দেখতে অনুগ্রহ করে লগিন করুন।</h3>
-        </div>
-    </div>
-</div>
 
 
 <!-- ========================================================= -->

@@ -25,4 +25,14 @@ class BiodataGeneralInfo extends Model
     {
         return Biodata::find($this->biodata_id);
     }
+
+    public function biodataRef()
+    {
+        return $this->belongsTo(Biodata::class, 'biodata_id', 'id');
+    }
+
+    public function biodataAddressRef()
+    {
+        return $this->hasOne(BiodataAddressInfo::class, 'biodata_id', 'biodata_id');
+    }
 }

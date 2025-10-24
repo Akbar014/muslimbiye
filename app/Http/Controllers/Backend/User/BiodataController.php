@@ -28,7 +28,7 @@ class BiodataController extends Controller
     {
         $biodata = Biodata::where(['user_id' => Auth::guard('user')->user()->id, 'deleted' => "0", 'admin_created' => '0'])->first();
 
-        if (!$biodata) {
+        if (!$biodata) {         
             return view('frontend_new.user.edit_biodata.terms');
         }
         $general = $biodata->general();
@@ -749,24 +749,31 @@ class BiodataController extends Controller
 
     private function normalizeLocalPhone($raw) {
         if (!$raw) return null;
-
-        // Bangla → English digits
+    
         $bn = ['০','১','২','৩','৪','৫','৬','৭','৮','৯'];
         $en = ['0','1','2','3','4','5','6','7','8','9'];
-        $phone = str_replace($bn, $en, $raw);
+        $phone = str_replace($bn, $en, (string)$raw);
     
-        $phone = preg_replace('/\D/', '', $phone);
+        $phone = preg_replace('/\D/', '', $phone) ?? '';
+
+        if (strpos($phone, '00880') === 0) {
+            $phone = substr($phone, 5);
+        }
 
         if (strpos($phone, '880') === 0) {
             $phone = substr($phone, 3);
         }
 
+        if (preg_match('/^1[3-9]\d{8}$/', $phone)) {
+            $phone = '0' . $phone;
+        }
+
         if (preg_match('/^01[3-9]\d{8}$/', $phone)) {
             return $phone;
         }
-
         return null;
     }
+
 
 
     public function personal(Request $request)
@@ -1136,16 +1143,12 @@ class BiodataController extends Controller
 
     public function contact(Request $request)
     {
+
         $page_id = (int) ($request->input('page_id', 0));
         $user_id = Auth::guard('user')->id();
 
         $gurdian_phone    = $this->normalizeLocalPhone($request->input('gurdian_phone'));
         $gurdian_whatsapp = $this->normalizeLocalPhone($request->input('gurdian_whatsapp'));
-
-        $request->merge([
-            'gurdian_phone'    => $gurdian_phone,
-            'gurdian_whatsapp' => $gurdian_whatsapp,
-        ]);
 
         $request->merge([
             'gurdian_phone'    => $gurdian_phone,
@@ -1184,6 +1187,7 @@ class BiodataController extends Controller
             'biodata_email'     => $cap($request->input('biodata_email')),
         ];
 
+
         DB::transaction(function () use ($user_id, $payload) {
             $biodata = Biodata::updateOrCreate(
                 ['user_id' => $user_id, 'deleted' => '0', 'admin_created' => '0'],
@@ -1204,6 +1208,7 @@ class BiodataController extends Controller
 
         return back()->with([
             'page_id' => $page_id,
+            'show_final_modal'  => true,
         ]);
     }
 
