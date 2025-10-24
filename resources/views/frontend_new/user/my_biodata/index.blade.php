@@ -10,7 +10,7 @@
                         <div class="odd-content-title">
                             <div class="od-row !px-5 !mb-5">
                                 <div class="od-col-12 od-col-md-4 top-preview-bio-action ">
-                                    <a  class="od-button !px-8 !py-3 !bg-[#ad277c] ">Preview Biodataaaa</a>
+                                    <a  class="od-button !px-8 !py-3 !bg-[#ad277c] ">Preview Biodata</a>
                                 </div>
                                 <div class="od-col-12 od-col-md-8">
                                     <div class="od-row top-preview-bio-action  padding-0 !mx-auto !text-right">

@@ -126,14 +126,24 @@ class BiodataController extends Controller
         $biodata->save();
 
         $updateStatus = $this->updateStatus($biodata);
-        if ($updateStatus) {
-            return redirect()->route('user.my_biodata')->with('success', 'You\'r Biodata Has Been Submitted. We\'ll Approve Your Biodata Soon.');
+
+        if ($updateStatus) {        
+        return redirect()->route('user.my_biodata')->with(
+            'success',
+            'আপনার বায়োডাটা জমা দেওয়া হয়েছে। আমরা খুব শিগগিরই আপনার বায়োডাটা অনুমোদন করব।'
+        );
         }
         if ($data && $biodata) {
-            return redirect()->back()->with(["page_id" => $page_id, 'success' => 'Successfully Stored']);
+            return redirect()->back()->with([
+                "page_id" => $page_id,
+                'success' => 'তথ্য সফলভাবে সংরক্ষিত হয়েছে।'
+            ]);
         } else {
-            return redirect()->back()->with("page_id", $page_id)->withErrors(['biodata' => 'Something Went Wrong']);
+            return redirect()->back()
+                ->with("page_id", $page_id)
+                ->withErrors(['biodata' => 'কিছু একটা ভুল হয়েছে, অনুগ্রহ করে আবার চেষ্টা করুন।']);
         }
+
     }
 
 
@@ -251,7 +261,7 @@ class BiodataController extends Controller
         // Continue to next step (never breaks the flow)
         return back()->with([
             'page_id' => $page_id + 1,
-            'success' => 'তথ্য সংরক্ষিত হয়েছে। পরবর্তী ধাপে যান।',
+            'success' => 'আপনার তথ্য সফলভাবে সংরক্ষণ করা হয়েছে। এখন পরবর্তী ধাপে যেতে পারেন।',
         ]);
     }
 
@@ -734,32 +744,43 @@ class BiodataController extends Controller
             'page_id' => $page_id + 1,
             'success' => 'পরিবারের তথ্য সংরক্ষিত হয়েছে। পরবর্তী ধাপে যান।',
         ]);
-    }  
+    }
+
+
+    private function normalizeLocalPhone($raw) {
+        if (!$raw) return null;
+
+        // Bangla → English digits
+        $bn = ['০','১','২','৩','৪','৫','৬','৭','৮','৯'];
+        $en = ['0','1','2','3','4','5','6','7','8','9'];
+        $phone = str_replace($bn, $en, $raw);
+    
+        $phone = preg_replace('/\D/', '', $phone);
+
+        if (strpos($phone, '880') === 0) {
+            $phone = substr($phone, 3);
+        }
+
+        if (preg_match('/^01[3-9]\d{8}$/', $phone)) {
+            return $phone;
+        }
+
+        return null;
+    }
+
 
     public function personal(Request $request)
     {
         $page_id = (int) ($request->input('page_id', 0));
         $user_id = Auth::guard('user')->id();
 
-        /* A) phone_number normalize (if present) */
+        /* phone_number normalize (if present) */
         if ($request->filled('phone_number')) {
-            $bn = ['০','১','২','৩','৪','৫','৬','৭','৮','৯'];
-            $en = ['0','1','2','3','4','5','6','7','8','9'];
-            $phone = str_replace($bn, $en, (string)$request->input('phone_number'));
-            $phone = preg_replace('/[^\d\+]/', '', $phone);
-            if (strpos($phone, '+880') === 0) {
-                // ok
-            } elseif (strpos($phone, '880') === 0) {
-                $phone = '+' . $phone;
-            } elseif (strpos($phone, '01') === 0 && strlen($phone) === 11) {
-                $phone = '+88' . $phone;
-            } elseif (preg_match('/^1[3-9]\d{8}$/', $phone)) {
-                $phone = '+880' . $phone;
-            }
-            $request->merge(['phone_number' => $phone]);
+            $normalized = $this->normalizeLocalPhone($request->input('phone_number'));
+            $request->merge(['phone_number' => $normalized]);
         }
 
-        /* B) Validate (single pass) */
+        /* Validate (single pass) */
         $request->validate([
             'dressup'             => ['nullable','string','max:255'],
             'niqab_info'          => ['nullable','string','max:255'],
@@ -779,16 +800,16 @@ class BiodataController extends Controller
             'person_category'     => ['nullable','array'],
             'become_muslim'       => ['nullable','string','max:255'],
             'hobby'               => ['nullable','string','max:255'],
-            'phone_number'        => ['nullable','regex:/^\+8801[3-9]\d{8}$/'],
-            'photo'               => ['nullable','image','mimes:jpeg,png,jpg,gif','max:2048'], // 2MB
+            'phone_number' => ['nullable','regex:/^01[3-9]\d{8}$/'],
+            'photo'        => ['nullable','image','mimes:jpeg,png,jpg,gif','max:2048'],
         ], [
-            'phone_number.regex' => 'ফোন নম্বরটি +8801XXXXXXXXX ফরম্যাটে দিন (বাংলা সংখ্যাও লিখতে পারেন)।',
+            'phone_number.regex' => 'ফোন নম্বরটি 01XXXXXXXXX ফরম্যাটে দিন (বাংলা সংখ্যাও লিখতে পারেন)।',
             'photo.image'        => 'শুধুমাত্র ইমেজ ফাইল আপলোড করতে পারবেন।',
             'photo.mimes'        => 'ইমেজ ফরম্যাট jpeg, png, jpg বা gif হতে হবে।',
             'photo.max'          => 'ইমেজের সাইজ সর্বোচ্চ 2MB হতে পারবে।',
         ]);
 
-        /* C) Sanitize: trim + 255 hard-cap */
+        /* Sanitize: trim + 255 hard-cap */
         $cap = function ($v) {
             $v = trim((string)$v);
             return $v === '' ? null : mb_substr($v, 0, 255);
@@ -1118,30 +1139,13 @@ class BiodataController extends Controller
         $page_id = (int) ($request->input('page_id', 0));
         $user_id = Auth::guard('user')->id();
 
-        // Helper: phone normalize to +8801XXXXXXXXX
-        $normalizePhone = function ($raw) {
-            if ($raw === null) return null;
-            $raw = (string)$raw;
-            $bn = ['০','১','২','৩','৪','৫','৬','৭','৮','৯'];
-            $en = ['0','1','2','3','4','5','6','7','8','9'];
-            $p = str_replace($bn, $en, $raw);
-            $p = preg_replace('/[^\d\+]/', '', $p);
-            if ($p === '') return null;
+        $gurdian_phone    = $this->normalizeLocalPhone($request->input('gurdian_phone'));
+        $gurdian_whatsapp = $this->normalizeLocalPhone($request->input('gurdian_whatsapp'));
 
-            if (strpos($p, '+880') === 0) {
-                // ok
-            } elseif (strpos($p, '880') === 0) {
-                $p = '+' . $p;
-            } elseif (strpos($p, '01') === 0 && strlen($p) === 11) {
-                $p = '+88' . $p;
-            } elseif (preg_match('/^1[3-9]\d{8}$/', $p)) {
-                $p = '+880' . $p;
-            }
-            return $p;
-        };
-
-        $gurdian_phone    = $normalizePhone($request->input('gurdian_phone'));
-        $gurdian_whatsapp = $normalizePhone($request->input('gurdian_whatsapp'));
+        $request->merge([
+            'gurdian_phone'    => $gurdian_phone,
+            'gurdian_whatsapp' => $gurdian_whatsapp,
+        ]);
 
         $request->merge([
             'gurdian_phone'    => $gurdian_phone,
@@ -1157,18 +1161,18 @@ class BiodataController extends Controller
             'biodata_email'     => ['nullable','string','email','max:255'],
 
             // phones optional but format-checked if present
-            'gurdian_phone'     => ['nullable','regex:/^\+8801[3-9]\d{8}$/'],
-            'gurdian_whatsapp'  => ['nullable','regex:/^\+8801[3-9]\d{8}$/'],
+           'gurdian_phone'     => ['nullable','regex:/^01[3-9]\d{8}$/'],
+           'gurdian_whatsapp'  => ['nullable','regex:/^01[3-9]\d{8}$/'],
         ], [
-            'gurdian_phone.regex'    => 'অভিভাবকের ফোন নম্বরটি +8801XXXXXXXXX ফরম্যাটে দিন।',
-            'gurdian_whatsapp.regex' => 'অভিভাবকের হোয়াটসঅ্যাপ নম্বরটি +8801XXXXXXXXX ফরম্যাটে দিন।',
+            'gurdian_phone.regex'    => 'অভিভাবকের ফোন নম্বরটি 01XXXXXXXXX ফরম্যাটে দিন (বাংলা সংখ্যাও লিখতে পারেন)।',
+            'gurdian_whatsapp.regex' => 'অভিভাবকের হোয়াটসঅ্যাপ নম্বরটি 01XXXXXXXXX ফরম্যাটে দিন (বাংলা সংখ্যাও লিখতে পারেন)।',
             'biodata_email.email'    => 'বৈধ ইমেইল ঠিকানা দিন।',
         ]);
 
         $cap = function ($v) {
             $v = trim((string)$v);
             return $v === '' ? null : mb_substr($v, 0, 255);
-        };
+        }; 
 
         $payload = [
             'bride_name'        => $cap($request->input('bride_name')),
@@ -1199,8 +1203,7 @@ class BiodataController extends Controller
         });
 
         return back()->with([
-            'page_id' => $page_id, // শেষ স্টেপ, তাই increment নয়
-            'success' => 'কন্ট্যাক্ট তথ্য সংরক্ষিত হয়েছে।',
+            'page_id' => $page_id,
         ]);
     }
 

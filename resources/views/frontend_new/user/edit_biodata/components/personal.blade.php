@@ -333,10 +333,18 @@
                         <span class="od-required-label">*</span></label>
                 </div>
 
-                <div class="od-form-group-input od-custom-text_box">
-                    <input type="text" name="phone_number" id="phone_number" class="od-field-type__textbox"
-                        placeholder="01700-000000" value="{{ isset($personal) ? $personal->phone_number : '' }}" required />
-                </div>
+                @if ($personal && $personal->phone_number)
+                    <div class="od-form-group-input od-custom-text_box">
+                        <input type="text" name="phone_number" id="phone_number" class="od-field-type__textbox"
+                            value="{{ isset($personal) ? $personal->phone_number : '' }}" required />
+                    </div>
+                 @else
+                    <div class="od-form-group-input od-custom-text_box">
+                        <input type="text" name="phone_number" id="phone_number" class="od-field-type__textbox"
+                            placeholder="01700-000000" required />
+                    </div>                    
+                @endif
+
 
                 <div class="od-field-desc od-pt-10">
                     <p>

@@ -52,7 +52,7 @@ return [
     |
     */
 
-    'url' => env('APP_URL', 'https://muslimbie.com/'),
+    'url' => env('APP_URL', 'https://muslimbiye.com.bd/'),
 
     'asset_url' => env('ASSET_URL', null),
 
