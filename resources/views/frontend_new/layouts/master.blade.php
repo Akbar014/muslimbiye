@@ -15,6 +15,7 @@
           background-color:  transparent linear-gradient(217deg, #1f0785 0%, #FF2ADE 100%) 0% 0% no-repeat padding-box;;
       }
     </style>
+    @yield('css')
 </head>
 
 <body>
