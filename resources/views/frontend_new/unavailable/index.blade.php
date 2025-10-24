@@ -2,7 +2,7 @@
 @section('title', 'MuslimBie | মুসলিম বিয়ে - বায়োডাটা পাওয়া যায়নি')
 
 @section('content')
-<div class="min-h-[100vh] flex items-center justify-center px-4 py-8">
+<div class="min-h-[100vh] flex items-center justify-center px-4 py-8" style="min-height: 100vh">
   <div class="max-w-xl w-full text-center bg-white/70 backdrop-blur rounded-xl p-6 shadow">
     <h1 class="text-2xl font-bold"
         style="background: linear-gradient(217deg, #1f0785 0%, #af2199 100%);
@@ -25,23 +25,20 @@
 
     <div class="mt-6 flex items-center justify-center gap-3">
       <a href="{{ route('frontend.home') }}"
-         class="inline-flex items-center justify-center px-5 py-3 rounded-lg font-semibold text-white
-                bg-gradient-to-r from-[#1f0785] to-[#af2199] shadow-md hover:shadow-lg
-                hover:from-[#2a0db0] hover:to-[#c63bb2] transition-all">
+        style="padding: 8px 20px; color:#fff; background-color: #2F4AB3; border: none; border-radius: 5px; cursor: pointer;">
         হোমপেজে ফিরে যান
       </a>
 
       @auth('user')
         <a href="{{ route('user.dashboard') }}"
-           class="inline-flex items-center justify-center px-5 py-3 rounded-lg font-semibold text-[#1f0785]
-                  bg-white border border-[#1f0785]/20 hover:border-[#1f0785]/40 hover:shadow transition-all">
+            style="padding: 8px 20px; color:#fff; background-color: #FF2ADE; border: none; border-radius: 5px; cursor: pointer;">
           ড্যাশবোর্ড দেখুন
         </a>
       @endauth
     </div>
 
     <p class="text-gray-500 text-sm mt-4">
-      প্রয়োজনে <a href="{{ route('frontend.contact_us') }}" class="underline">সাপোর্টে যোগাযোগ</a> করতে পারেন।
+      প্রয়োজনে <a href="{{ route('frontend.contact_us') }}" style="padding: 8px 20px; color:#fff; background-color: #2a0e85; border: none; border-radius: 5px; cursor: pointer;">সাপোর্টে যোগাযোগ</a> করতে পারেন।
     </p>
   </div>
 </div>
