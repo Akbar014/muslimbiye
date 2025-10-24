@@ -2,7 +2,7 @@
 @section('title', 'MuslimBie | মুসলিম বিয়ে - বায়োডাটা পাওয়া যায়নি')
 
 @section('content')
-<div class="min-h-[60vh] flex items-center justify-center px-4">
+<div class="min-h-[100vh] flex items-center justify-center px-4 py-8">
   <div class="max-w-xl w-full text-center bg-white/70 backdrop-blur rounded-xl p-6 shadow">
     <h1 class="text-2xl font-bold"
         style="background: linear-gradient(217deg, #1f0785 0%, #af2199 100%);
