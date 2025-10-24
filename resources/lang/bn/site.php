@@ -879,7 +879,7 @@ return [
         'confirm_password' => 'পাসওয়ার্ড নিশ্চিত করুন',
         'confirm_password_placeholder' => 'পাসওয়ার্ড পুনরায় লিখুন',
         'your_email_or_phone_address' => 'আপনার ইমেইল বা ফোন নম্বর',
-        'verify_otp' => 'ওটিপি যাচাই',
+        'verify_otp' => 'ওটিপি ভেরিফাই করুন।',
         'otp_sent_to' => 'ওটিপি পাঠানো হয়েছে',
         'enter_otp' => 'ওটিপি লিখুন',
         'six_digit_code' => '৬-অঙ্কের কোড',
