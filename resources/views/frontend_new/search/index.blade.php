@@ -51,6 +51,31 @@
             font-weight: bold;
             cursor: pointer;
         }
+
+        .create-biodata-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        padding: 10px 25px;
+        border-radius: 5px;
+        text-decoration: none;
+        font-size: 1.1rem;
+        font-weight: 600;
+        margin-top: 8px;
+        background: #1f0785;
+        color: #fff;
+        box-shadow: 0 3px 10px rgba(175, 33, 153, 0.25);
+        transition: all 0.25s ease;
+        }
+
+        .create-biodata-btn:hover {
+        transform: translateY(-2px);
+        }
+
+        .create-biodata-btn svg {
+        pointer-events: none;
+        }
     </style>
 @endsection
 
@@ -181,15 +206,13 @@
             <p style="color: black;">!!! বায়োডাটা সাবমিট করলে আপনি পাচ্ছেন ১০ টি এক্সক্লুসিভ কানেকশন
                 একদম ফ্রি !!!
             <p>
-                <button class="btn btn-info mt-2 create-bio">
-
-                    <a href="{{ route('user.edit_biodata.index') }}"
-                        class="col-span-12 sm:col-span-6 bg-button-color !text-white font-bold text-center drop-shadow-none shadow-slate-600 hover:drop-shadow-lg rounded-md gap-2 p-4 w-full h-[60px] flex items-center justify-center max-w-[425px] !no-underline !text-[1rem] sm:!text-[1.2rem]">
+                 <a href="{{ route('user.edit_biodata.index') }}"
+                    class="create-biodata-btn">
                         <svg xmlns="http://www.w3.org/2000/svg" width="1.2rem" height="1.2rem" viewBox="0 0 16 16">
                             <path fill="white" d="M7 7V.5h2V7h6.5v2H9v6.5H7V9H.5V7z"></path>
-                        </svg> বায়োডাটা তৈরি করুন
-                    </a>
-                </button>
+                        </svg>
+                        বায়োডাটা তৈরি করুন
+            </a>
 
         </div>
     </div>

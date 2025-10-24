@@ -172,6 +172,95 @@
         </div>
     </div>
 
+<style>
+    .custom-modal {
+        display: none;
+        position: fixed;
+        z-index: 9999;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        justify-content: center;
+        align-items: center;
+    }
+
+    .custom-modal-content {
+        background: #fff;
+        padding: 20px;
+        border-radius: 8px;
+        text-align: center;
+        width: 700px;
+        max-width: 90%;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    }
+
+    .close-btn {
+        float: right;
+        font-size: 24px;
+        font-weight: bold;
+        cursor: pointer;
+    }
+
+    #approvalModal p {
+        line-height: 200%;
+    }
+
+    .create-biodata-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 10px 25px;
+    border-radius: 5px;
+    text-decoration: none;
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-top: 8px;
+    background: #1f0785;
+    color: #fff;
+    box-shadow: 0 3px 10px rgba(175, 33, 153, 0.25);
+    transition: all 0.25s ease;
+    }
+
+    .create-biodata-btn:hover {
+    transform: translateY(-2px);
+    }
+
+    .create-biodata-btn svg {
+    pointer-events: none;
+    }
+
+</style>
+        <div id="afterFinalSubmit" class="custom-modal">
+        <div class="custom-modal-content">
+            <span id="closeModalBtn2" class="close-btn">&times;</span>
+            <h2
+                style="
+                    background: linear-gradient(217deg, #1f0785 0%, #af2199 100%);
+                    -webkit-background-clip: text;
+                    -webkit-text-fill-color: transparent;    padding: 5px; 
+                ">
+                মুসলিম বিয়ে
+            </h2>
+
+            <p style="color: black;"> আপনার বায়োডাটা সাবমিট করুন।</p>
+            <p style="color: black;">!!! বায়োডাটা সাবমিট করলে আপনি পাচ্ছেন ১০ টি এক্সক্লুসিভ কানেকশন
+                একদম ফ্রি !!!
+            <p>
+                
+            <a href="{{ route('user.edit_biodata.index') }}"
+            class="create-biodata-btn">
+                <svg xmlns="http://www.w3.org/2000/svg" width="1.2rem" height="1.2rem" viewBox="0 0 16 16">
+                    <path fill="white" d="M7 7V.5h2V7h6.5v2H9v6.5H7V9H.5V7z"></path>
+                </svg>
+                বায়োডাটা তৈরি করুন
+            </a>
+        </div>
+    </div>
+
+
 @endsection
 @section('js')
     <script>
@@ -183,4 +272,28 @@
         //     });
         // });
     </script>
+
+    @if (session('show_login_modal'))
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            var modal2 = document.getElementById('afterFinalSubmit');
+            var close2 = document.getElementById('closeModalBtn2');
+            if (!modal2 || !close2) return;
+
+            modal2.style.display = 'flex';
+
+            // close handlers
+            function hideModal2() {
+                modal2.style.display = 'none';
+            }
+            close2.addEventListener('click', hideModal2);
+            window.addEventListener('click', function(e) {
+                if (e.target === modal2) hideModal2();
+            });
+            window.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape') hideModal2();
+            });
+        });
+    </script>
+@endif
 @endsection

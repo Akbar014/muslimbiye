@@ -19,7 +19,7 @@
         <div class="od-search-option-input">
             <input
                 id="otp" type="text" name="otp"
-                value="{{ old('otp', $token) }}"
+                value=""
                 placeholder="@lang('site.six_digit_code')"
                 class="od-biodata-search-control outline-none h-full w-full !px-3 {{ $errors->has('otp') ? 'border-red-500' : 'border-[#d5d5d5]' }} border-[1px] rounded-[10px]" />
         </div>
