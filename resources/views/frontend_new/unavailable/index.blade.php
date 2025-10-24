@@ -41,7 +41,7 @@
     </div>
 
     <p class="text-gray-500 text-sm mt-4">
-      প্রয়োজনে <a href="{{ route('frontend.contact') }}" class="underline">সাপোর্টে যোগাযোগ</a> করতে পারেন।
+      প্রয়োজনে <a href="{{ route('frontend.contact_us') }}" class="underline">সাপোর্টে যোগাযোগ</a> করতে পারেন।
     </p>
   </div>
 </div>
