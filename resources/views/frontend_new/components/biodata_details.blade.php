@@ -151,8 +151,6 @@
                 <span class="whitespace-nowrap">Copy Link</span>
             </a>
 
-            <p>{{ $biodata }} only id {{ $biodata->id }}</p>
-
             <input type="hidden" id="copy_biodata_link" value="{{ route('frontend.biodata_details', $biodata->id) }}">
         </div>
     </div>

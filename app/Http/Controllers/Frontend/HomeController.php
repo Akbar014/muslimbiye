@@ -41,7 +41,11 @@ class HomeController extends Controller
    {
       $biodata = Biodata::where(["id" => $id, "deleted" => '0'])->first();
       if (!$biodata || $biodata->status != 2) {
-         return abort(404);
+          return response()
+            ->view('frontend_new.biodata_details.unavailable', [
+                'id'      => $id,
+                'biodata' => $biodata, // null বা pending হতে পারে
+            ], 404);
       }
       $biodata->visit_count += 1;
       $biodata->save();
