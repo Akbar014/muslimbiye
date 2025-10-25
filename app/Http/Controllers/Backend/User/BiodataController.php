@@ -146,7 +146,6 @@ class BiodataController extends Controller
 
     }
 
-
     public function general(Request $request)
     {
         // --- Build birthdate from day/month/year (old logic preserved) ---
@@ -433,11 +432,33 @@ class BiodataController extends Controller
             'deen_designations' => 'দ্বীনি পদবী',
         ];
 
+        // --- Helper: Bangla digits → English digits ---
+        $bnDigits = ['০','১','২','৩','৪','৫','৬','৭','৮','৯'];
+        $enDigits = ['0','1','2','3','4','5','6','7','8','9'];
+        $toEnYear = function ($v) use ($bnDigits, $enDigits) {
+            if ($v === null) return null;
+            // convert bn→en then keep only digits
+            $v = str_replace($bnDigits, $enDigits, (string)$v);
+            $v = preg_replace('/\D+/', '', $v ?? '');
+            return $v ?: null;
+        };
+
+        // --- Pre-normalize: Year-like fields accept Bangla or English digits ---
+        // Suffixes we treat as "year" fields
+        $yearSuffixes = ['_year', '_passing_year', '_pass_year'];
+        foreach ($varchar255 as $f) {
+            foreach ($yearSuffixes as $suf) {
+                if (\Illuminate\Support\Str::endsWith($f, $suf) && $request->filled($f)) {
+                    $request->merge([$f => $toEnYear($request->input($f))]);
+                    break;
+                }
+            }
+        }
+
         // --- Validation rules ---
         $rules = [];
         foreach ($varchar255 as $f) {
-            // year ফিল্ডে numeric year validation
-            if (Str::endsWith($f, ['_year', '_passing_year', '_pass_year'])) {
+            if (\Illuminate\Support\Str::endsWith($f, $yearSuffixes)) {
                 $rules[$f] = ['nullable', 'digits:4', 'regex:/^(19|20)\d{2}$/'];
             } else {
                 $rules[$f] = ['nullable', 'string', 'max:255'];
@@ -449,7 +470,7 @@ class BiodataController extends Controller
         foreach ($varchar255 as $f) {
             $label = $bnLabels[$f] ?? $f;
 
-            if (Str::endsWith($f, ['_year', '_passing_year', '_pass_year'])) {
+            if (\Illuminate\Support\Str::endsWith($f, $yearSuffixes)) {
                 $messages["$f.digits"] = "‘{$label}’ ৪ সংখ্যার হতে হবে (যেমন 2022)।";
                 $messages["$f.regex"]  = "‘{$label}’ সঠিক বছর নয়।";
             }
@@ -746,7 +767,6 @@ class BiodataController extends Controller
         ]);
     }
 
-
     private function normalizeLocalPhone($raw) {
         if (!$raw) return null;
     
@@ -773,7 +793,6 @@ class BiodataController extends Controller
         }
         return null;
     }
-
 
 
     public function personal(Request $request)
@@ -806,7 +825,7 @@ class BiodataController extends Controller
             'favourite_alem'      => ['nullable','string','max:255'],
             'person_category'     => ['nullable','array'],
             'become_muslim'       => ['nullable','string','max:255'],
-            'hobby'               => ['nullable','string','max:255'],
+            'hobby'               => ['nullable'],
             'phone_number' => ['nullable','regex:/^01[3-9]\d{8}$/'],
             'photo'        => ['nullable','image','mimes:jpeg,png,jpg,gif','max:2048'],
         ], [
