@@ -2,23 +2,24 @@
 
 namespace App\Http\Controllers\Backend\User;
 
-use App\Http\Controllers\Controller;
 use App\Models\Biodata;
-use App\Models\BiodataAddressInfo;
-use App\Models\BiodataCommitmentInfo;
-use App\Models\BiodataContactInfo;
-use App\Models\BiodataEducationInfo;
-use App\Models\BiodataExpectedInfo;
-use App\Models\BiodataFamilyInfo;
-use App\Models\BiodataGeneralInfo;
-use App\Models\BiodataMarrageInfo;
-use App\Models\BiodataPersonalInfo;
-use App\Models\BiodataProfessionalInfo;
+use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
-use Illuminate\Support\Facades\Auth;
+use App\Models\BiodataFamilyInfo;
+use App\Models\BiodataAddressInfo;
+use App\Models\BiodataContactInfo;
+use App\Models\BiodataGeneralInfo;
+use App\Models\BiodataMarrageInfo;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Str;
+use App\Models\BiodataExpectedInfo;
+use App\Models\BiodataPersonalInfo;
+use App\Http\Controllers\Controller;
+use App\Models\BiodataEducationInfo;
+use Illuminate\Support\Facades\Auth;
+use App\Models\BiodataCommitmentInfo;
+use App\Models\BiodataProfessionalInfo;
+use Illuminate\Support\Facades\Storage;
 
 class BiodataController extends Controller
 {
@@ -27,7 +28,7 @@ class BiodataController extends Controller
     {
         $biodata = Biodata::where(['user_id' => Auth::guard('user')->user()->id, 'deleted' => "0", 'admin_created' => '0'])->first();
 
-        if (!$biodata) {
+        if (!$biodata) {         
             return view('frontend_new.user.edit_biodata.terms');
         }
         $general = $biodata->general();
@@ -40,6 +41,9 @@ class BiodataController extends Controller
         $expected = $biodata->expected();
         $commitment = $biodata->commitment();
         $contact = $biodata->contact();
+
+        // dd($general, $address,  $education, $family,  $personal, $professional,  $marrage,  $expected, $commitment, $contact);
+
         return view('frontend_new.user.edit_biodata.index', compact('biodata', 'general', 'address', 'education', 'family', 'personal', 'professional', 'marrage', 'expected', 'commitment', 'contact'));
     }
 
@@ -122,798 +126,1110 @@ class BiodataController extends Controller
         $biodata->save();
 
         $updateStatus = $this->updateStatus($biodata);
-        if ($updateStatus) {
-            return redirect()->route('user.my_biodata')->with('success', 'You\'r Biodata Has Been Submitted. We\'ll Approve Your Biodata Soon.');
+
+        if ($updateStatus) {        
+        return redirect()->route('user.my_biodata')->with(
+            'success',
+            'আপনার বায়োডাটা জমা দেওয়া হয়েছে। আমরা খুব শিগগিরই আপনার বায়োডাটা অনুমোদন করব।'
+        );
         }
         if ($data && $biodata) {
-            return redirect()->back()->with(["page_id" => $page_id, 'success' => 'Successfully Stored']);
+            return redirect()->back()->with([
+                "page_id" => $page_id,
+                'success' => 'তথ্য সফলভাবে সংরক্ষিত হয়েছে।'
+            ]);
         } else {
-            return redirect()->back()->with("page_id", $page_id)->withErrors(['biodata' => 'Something Went Wrong']);
+            return redirect()->back()
+                ->with("page_id", $page_id)
+                ->withErrors(['biodata' => 'কিছু একটা ভুল হয়েছে, অনুগ্রহ করে আবার চেষ্টা করুন।']);
         }
+
     }
 
     public function general(Request $request)
     {
-
-        // if ($request->has('biodata_type')) {
-        //     $this->biodata($request);
-        // }
-        $day = $request->input('day');
+        // --- Build birthdate from day/month/year (old logic preserved) ---
+        $day   = $request->input('day');
         $month = $request->input('month');
-        $year = $request->input('year');
-        
-        if ($day && $month && $year) {
-            $birthdate = \Carbon\Carbon::createFromDate($year, $month, $day)->format('Y-m-d');
+        $year  = $request->input('year');
+
+        if ($day && $month && $year && checkdate($month, $day, $year)) {
+            $birthdate = Carbon::createFromDate($year, $month, $day)->format('Y-m-d');
         } else {
             $birthdate = null;
-        } 
-        
+        }
+
+        // Keep your old merge line
         $request->merge(['birthdate' => $birthdate]);
-        
-        
-        $request->validate([
-            "bride_groom" => "required|string",
-            "marital_status" => "required|string",
-            // "birthdate" => "required|string",
-            // "birthdate" => "required",
-            "height" => "required|string",
-            "complexion" => "required|string",
-            "weight" => "required|string",
-            "blood_group" => "required|string",
-        ]);
 
-        // $request->validate([
-        //     'birthdate' => ['required', function ($attribute, $value, $fail) {
-        //         $birthdate = Carbon::createFromFormat('d/m/Y', $value);
-        //         $age = $birthdate->age;
-    
-        //         if ($age < 18 || $age > 70) {
-        //             $fail('Marriage is only valid for ages between 18 and 70.');
-        //         }
-        //     }]
-        // ]);
-        
-        $request->validate([
-            'birthdate' => ['required', 'date', function ($attribute, $value, $fail) {
-                try {
-                    // input আসবে YYYY-MM-DD format এ
-                    $birthdate = Carbon::createFromFormat('Y-m-d', $value);
-                    $age = $birthdate->age;
-        
-                    if ($age < 18 || $age > 70) {
-                        $fail('Marriage is only valid for ages between 18 and 70.');
-                    }
-                } catch (\Exception $e) {
-                    $fail('The '.$attribute.' is not a valid date.');
+        // ---- Single-pass validation (no duplicates) ----
+        $rules = [
+            'bride_groom'     => ['required','in:bride,groom'],
+            'marital_status'  => ['required'],
+            'day'             => ['nullable','integer','between:1,31'],
+            'month'           => ['nullable','integer','between:1,12'],
+            'year'            => ['nullable','integer','between:1950,' . now()->year],
+            'height'          => ['nullable','string','max:32'],
+            'complexion'      => ['nullable','string','max:32'],
+            'weight'          => ['nullable','string','max:16'],
+            'blood_group'     => ['nullable','in:A+,A-,B+,B-,O+,O-,AB+,AB-,N/A'],
+            'page_id'         => ['nullable','integer','min:0'],
+        ];
+
+        $messages = [
+            'bride_groom.required'    => 'পাত্র/পাত্রী নির্বাচন করুন।',
+            'marital_status.required' => 'বৈবাহিক অবস্থা নির্বাচন করুন।',
+        ];
+
+        $validator = \Validator::make($request->all(), $rules, $messages);
+
+        // Laravel 8: no Request::integer(), cast manually
+        $validator->after(function ($v) use ($request) {
+            $d = (int) $request->input('day');
+            $m = (int) $request->input('month');
+            $y = (int) $request->input('year');
+
+            if ($d && $m && $y) {
+                if (!checkdate($m, $d, $y)) {
+                    $v->errors()->add('birthdate', 'জন্মতারিখ সঠিক নয়।');
+                    return;
                 }
-            }]
+
+                $birth = Carbon::createFromDate($y, $m, $d);
+                $age   = $birth->age;
+
+                if ($age < 18 || $age > 70) {
+                    $v->errors()->add('birthdate', 'বিয়ে উপযোগী বয়স 18–70 বছর।');
+                }
+            }
+            // Partial DOB allowed (don’t block the step)
+        });
+
+        $validator->validate();
+
+        // Build birthdate only if fully provided & valid; keep null otherwise
+        $birthdate = null;
+        if ($request->filled(['day','month','year'])) {
+            $d = (int) $request->input('day');
+            $m = (int) $request->input('month');
+            $y = (int) $request->input('year');
+            if (checkdate($m, $d, $y)) {
+                $birthdate = Carbon::createFromDate($y, $m, $d)->format('Y-m-d');
+            }
+        }
+
+        $page_id = (int) $request->input('page_id', 0);
+        $user_id = Auth::guard('user')->id();
+
+        // ---- Atomic save (no half-writes) ----
+        DB::transaction(function () use ($user_id, $birthdate, $request) {
+            $biodata = Biodata::updateOrCreate(
+                ['user_id' => $user_id, 'deleted' => '0', 'admin_created' => '0'],
+                ['user_id' => $user_id]
+            );
+
+            $data = BiodataGeneralInfo::updateOrCreate(
+                ['user_id' => $user_id, 'biodata_id' => $biodata->id],
+                [
+                    'user_id'        => $user_id,
+                    'biodata_id'     => $biodata->id,
+                    'bride_groom'    => $request->input('bride_groom'),
+                    'marital_status' => $request->input('marital_status'),
+                    'birthdate'      => $birthdate, // nullable
+                    'height'         => $request->input('height'),
+                    'complexion'     => $request->input('complexion'),
+                    'weight'         => $request->input('weight'),
+                    'blood_group'    => $request->input('blood_group'),
+                ]
+            );
+
+            // Link section id
+            $biodata->general_id = $data->id;
+
+            // Maintain wizard progress
+            $completed = json_decode($biodata->completed, true) ?: [];
+            if (!in_array('address', $completed, true)) {
+                $completed[] = 'address';
+            }
+            // Store as JSON string to avoid casting issues
+            $biodata->completed = json_encode($completed);
+
+            $biodata->save();
+        });
+
+        // Continue to next step (never breaks the flow)
+        return back()->with([
+            'page_id' => $page_id + 1,
+            'success' => 'আপনার তথ্য সফলভাবে সংরক্ষণ করা হয়েছে। এখন পরবর্তী ধাপে যেতে পারেন।',
         ]);
-
-
-        $page_id = $request->page_id ?? 0;
-        $user_id = Auth::guard('user')->user()->id;
-
-
-        $biodata = Biodata::updateOrCreate(
-            ["user_id" => $user_id, "deleted" => '0', 'admin_created' => '0'],
-            [
-                "user_id" => $user_id,
-            ]
-        );
-
-        $data = BiodataGeneralInfo::updateOrCreate(
-            ["user_id" => $user_id, "biodata_id" => $biodata->id],
-            [
-                "user_id" => $user_id,
-                "biodata_id" => $biodata->id,
-                "bride_groom" => $request->bride_groom,
-                "marital_status" => $request->marital_status,
-                // "birthdate" => Carbon::createFromFormat('d/m/Y', $request->birthdate)->format('Y-m-d H:i:s'),
-                "birthdate" => $birthdate,
-                "height" => $request->height,
-                "complexion" => $request->complexion,
-                "weight" => $request->weight,
-                "blood_group" => $request->blood_group,
-            ]
-        );
-
-        $biodata->general_id = $data->id;
-
-        $completed = json_decode($biodata->completed);
-        if (!in_array("address", $completed)) {
-            array_push($completed, "address");
-        }
-        $biodata->completed = $completed;
-
-        $biodata->save();
-
-        $updateStatus = $this->updateStatus($biodata);
-        if ($updateStatus) {
-            return redirect()->route('user.my_biodata')->with('success', 'You\'r Biodata Has Been Submitted. We\'ll Approve Your Biodata Soon.');
-        }
-        if ($data && $biodata) {
-            return redirect()->back()->with(["page_id" => $page_id + 1, 'success' => 'Successfully Stored']);
-        } else {
-            return redirect()->back()->with("page_id", $page_id)->withErrors(['biodata' => 'Something Went Wrong']);
-        }
     }
 
     public function address(Request $request)
     {
-        $request->validate([
-            "parmanent_zella" => "required|string",
-            "parmanent_address" => "required|string",
-            "where_raised" => "required|string",
+        // --- Normalize (trim spaces) ---
+        $request->merge([
+            'parmanent_zella'    => trim((string) $request->input('parmanent_zella')),
+            'parmanent_address'  => trim((string) $request->input('parmanent_address')),
+            'present_zella'      => trim((string) $request->input('present_zella')),
+            'present_address'    => trim((string) $request->input('present_address')),
+            'where_raised'       => trim((string) $request->input('where_raised')),
         ]);
 
-        if ($request->present_address_same != 'on') {
-            $request->validate([
-                "present_zella" => "string",
-                "present_address" => "string",
-            ]);
-        }
+        // --- Single-pass validation ---
+        $request->validate([
+            'parmanent_zella'      => ['required','string','max:255'],
+            'parmanent_address'    => ['required','string','max:255'],
+            'where_raised'         => ['required','string','max:255'],
 
+            'present_address_same' => ['nullable'],
 
+            'present_zella'        => ['required_unless:present_address_same,on','string','max:255'],
+            'present_address'      => ['required_unless:present_address_same,on','string','max:255'],
+        ], [
+            'parmanent_zella.required'     => 'স্থায়ী জেলার নাম দিন।',
+            'parmanent_zella.max'          => 'স্থায়ী জেলা ২৫৫ অক্ষরের বেশি হতে পারবে না।',
+            'parmanent_address.required'   => 'স্থায়ী ঠিকানা দিন।',
+            'parmanent_address.max'        => 'স্থায়ী ঠিকানা ২৫৫ অক্ষরের বেশি হতে পারবে না।',
+            'where_raised.required'        => 'যেখানে বড় হয়েছেন তা দিন।',
+            'where_raised.max'             => 'এই ঘরটি ২৫৫ অক্ষরের বেশি হতে পারবে না।',
+            'present_zella.required_unless'=> 'বর্তমান জেলা দিন (যদি “একই” না সিলেক্ট করেন)।',
+            'present_zella.max'            => 'বর্তমান জেলা ২৫৫ অক্ষরের বেশি হতে পারবে না।',
+            'present_address.required_unless'=> 'বর্তমান ঠিকানা দিন (যদি “একই” না সিলেক্ট করেন)।',
+            'present_address.max'          => 'বর্তমান ঠিকানা ২৫৫ অক্ষরের বেশি হতে পারবে না।',
+        ]);
 
-        $page_id = $request->page_id ?? 0;
-        $user_id = Auth::guard('user')->user()->id;
+        $same   = $request->input('present_address_same') === 'on';
+        $pageId = (int) ($request->input('page_id', 0));
+        $userId = Auth::guard('user')->id();
 
-        $biodata = Biodata::updateOrCreate(
-            ["user_id" => $user_id, "deleted" => '0', 'admin_created' => '0'],
-            [
-                "user_id" => $user_id,
-            ]
-        );
+        DB::transaction(function () use ($request, $same, $userId) {
+            $biodata = Biodata::updateOrCreate(
+                ['user_id' => $userId, 'deleted' => '0', 'admin_created' => '0'],
+                ['user_id' => $userId]
+            );
 
-        $data = BiodataAddressInfo::updateOrCreate(
-            ["user_id" => $user_id, "biodata_id" => $biodata->id],
-            [
-                "user_id" => $user_id,
-                "biodata_id" => $biodata->id,
-                "parmanent_zella" => $request->parmanent_zella,
-                "parmanent_address" => $request->parmanent_address,
-                "present_address_same" => $request->present_address_same,
-                "present_zella" => $request->present_address_same != 'on' ? $request->present_zella : $request->parmanent_zella,
-                "present_address" => $request->present_address_same != 'on' ? $request->present_address : $request->parmanent_address,
-                "where_raised" => $request->where_raised,
-            ]
-        );
+            $data = BiodataAddressInfo::updateOrCreate(
+                ['user_id' => $userId, 'biodata_id' => $biodata->id],
+                [
+                    'user_id'               => $userId,
+                    'biodata_id'            => $biodata->id,
+                    'parmanent_zella'       => $request->input('parmanent_zella'),
+                    'parmanent_address'     => $request->input('parmanent_address'),
+                    'present_address_same'  => $same ? 'on' : null,
+                    'present_zella'         => $same ? $request->input('parmanent_zella')   : $request->input('present_zella'),
+                    'present_address'       => $same ? $request->input('parmanent_address') : $request->input('present_address'),
+                    'where_raised'          => $request->input('where_raised'),
+                ]
+            );
 
-        $biodata->address_id = $data->id;
+            $biodata->address_id = $data->id;
 
-        $completed = json_decode($biodata->completed);
-        if (!in_array("education", $completed)) {
-            array_push($completed, "education");
-        }
-        $biodata->completed = $completed;
+            // Wizard progress
+            $completed = json_decode($biodata->completed, true) ?: [];
+            if (!in_array('education', $completed, true)) {
+                $completed[] = 'education';
+            }
+            $biodata->completed = json_encode($completed);
+            $biodata->save();
+        });
 
-        $biodata->save();
-
-        $updateStatus = $this->updateStatus($biodata);
-        if ($updateStatus) {
-            return redirect()->route('user.my_biodata')->with('success', 'You\'r Biodata Has Been Submitted. We\'ll Approve Your Biodata Soon.');
-        }
-        if ($data && $biodata) {
-            return redirect()->back()->with(["page_id" => $page_id + 1, 'success' => 'Successfully Stored']);
-        } else {
-            return redirect()->back()->with("page_id", $page_id)->withErrors(['biodata' => 'Something Went Wrong']);
-        }
+        return back()->with([
+            'page_id' => $pageId + 1,
+            'success' => 'ঠিকানা সংরক্ষিত হয়েছে। পরবর্তী ধাপে যান।',
+        ]);
     }
 
     public function education(Request $request)
     {
-        $page_id = $request->page_id ?? 0;
-        $user_id = Auth::guard('user')->user()->id;
+        $page_id = (int) ($request->input('page_id', 0));
+        $user_id = Auth::guard('user')->id();
 
+        // সব VARCHAR(255) ফিল্ড
+        $varchar255 = [
+            'education_medium',
+            'general_highest_education',
+            'general_highest_school_study',
+            'ssc_year',
+            'ssc_dept',
+            'ssc_result',
+            'hsc_study_running',
+            'study_after_ssc',
+            'hsc_pass_year',
+            'hsc_dept',
+            'hsc_result',
+            'diploma_subject',
+            'diploma_institution',
+            'diploma_current_year',
+            'diploma_passing_year',
+            'honors_subject',
+            'honors_institution',
+            'honors_instutution',
+            'honors_passing_year',
+            'honors_study_year',
+            'masters_subject',
+            'masters_institution',
+            'masters_passing_year',
+            'doctorate_subject',
+            'doctorate_institution',
+            'doctorate_passing_year',
+            'qawmi_education_qualification',
+            'ibtedai_madrasa',
+            'mutawassitah_madrasa',
+            'sanabia_ulya_madrasa',
+            'fazilat_madrasa',
+            'takmil_madrasa',
+            'takhassus_madrasa',
+            'qawmi_result',
+            'qawmi_passing_year',
+            'takhassus_subject',
+            'takhassus_result',
+            'takhassus_passing_year',
+            'others_educational_qualifications',
+            'deen_designations',
+        ];
 
-        $biodata = Biodata::updateOrCreate(
-            ["user_id" => $user_id, "deleted" => '0', 'admin_created' => '0'],
-            [
-                "user_id" => $user_id,
-            ]
-        );
+        // --- বাংলা লেবেল (error message friendly) ---
+        $bnLabels = [
+            'education_medium' => 'শিক্ষার মাধ্যম',
+            'general_highest_education' => 'সর্বোচ্চ শিক্ষা',
+            'general_highest_school_study' => 'স্কুল পর্যন্ত পড়াশোনা',
+            'ssc_year' => 'এসএসসি সন',
+            'ssc_dept' => 'এসএসসি বিভাগ',
+            'ssc_result' => 'এসএসসি ফলাফল',
+            'hsc_study_running' => 'এইচএসসি অধ্যয়ন',
+            'study_after_ssc' => 'এসএসসি পরবর্তী পড়াশোনা',
+            'hsc_pass_year' => 'এইচএসসি পাশের সন',
+            'hsc_dept' => 'এইচএসসি বিভাগ',
+            'hsc_result' => 'এইচএসসি ফলাফল',
+            'diploma_subject' => 'ডিপ্লোমা বিষয়',
+            'diploma_institution' => 'ডিপ্লোমা প্রতিষ্ঠান',
+            'diploma_current_year' => 'চলতি বর্ষ',
+            'diploma_passing_year' => 'পাশের সন',
+            'honors_subject' => 'অনার্স বিষয়',
+            'honors_institution' => 'অনার্স প্রতিষ্ঠান',
+            'honors_instutution' => 'অনার্স প্রতিষ্ঠান',
+            'honors_passing_year' => 'অনার্স পাশের সন',
+            'honors_study_year' => 'অনার্স অধ্যয়ন বর্ষ',
+            'masters_subject' => 'মাস্টার্স বিষয়',
+            'masters_institution' => 'মাস্টার্স প্রতিষ্ঠান',
+            'masters_passing_year' => 'মাস্টার্স পাশের সন',
+            'doctorate_subject' => 'ডক্টরেট বিষয়',
+            'doctorate_institution' => 'ডক্টরেট প্রতিষ্ঠান',
+            'doctorate_passing_year' => 'ডক্টরেট পাশের সন',
+            'qawmi_education_qualification' => 'কওমি শিক্ষা যোগ্যতা',
+            'ibtedai_madrasa' => 'ইবতেদায়ী মাদরাসা',
+            'mutawassitah_madrasa' => 'মুতাওয়াসসিতা মাদরাসা',
+            'sanabia_ulya_madrasa' => 'সানাবিয়া উলিয়া মাদরাসা',
+            'fazilat_madrasa' => 'ফাজিলাত মাদরাসা',
+            'takmil_madrasa' => 'তাকমিল মাদরাসা',
+            'takhassus_madrasa' => 'তাখাসসুস মাদরাসা',
+            'qawmi_result' => 'কওমি ফলাফল',
+            'qawmi_passing_year' => 'কওমি পাশের সন',
+            'takhassus_subject' => 'তাখাসসুস বিষয়',
+            'takhassus_result' => 'তাখাসসুস ফলাফল',
+            'takhassus_passing_year' => 'তাখাসসুস পাশের সন',
+            'others_educational_qualifications' => 'অন্যান্য শিক্ষাগত যোগ্যতা',
+            'deen_designations' => 'দ্বীনি পদবী',
+        ];
 
-        $data = BiodataEducationInfo::updateOrCreate(
-            ["user_id" => $user_id, "biodata_id" => $biodata->id],
-            [
-                "user_id" => $user_id,
-                "biodata_id" => $biodata->id,
-                "education_medium" => $request->education_medium ?? null,
-                "general_highest_education" => $request->general_highest_education ?? null,
-                "general_highest_school_study" => $request->general_highest_school_study ?? null,
-                "ssc_year" => $request->ssc_year ?? null,
-                "ssc_dept" => $request->ssc_dept ?? null,
-                "ssc_result" => $request->ssc_result ?? null,
-                "hsc_study_running" => $request->hsc_study_running ?? null,
-                "study_after_ssc" => $request->study_after_ssc ?? null,
-                "hsc_pass_year" => $request->hsc_pass_year ?? null,
-                "hsc_dept" => $request->hsc_dept ?? null,
-                "hsc_result" => $request->hsc_result ?? null,
-                "diploma_subject" => $request->diploma_subject ?? null,
-                "diploma_institution" => $request->diploma_institution ?? null,
-                "diploma_current_year" => $request->diploma_current_year ?? null,
-                "diploma_passing_year" => $request->diploma_passing_year ?? null,
-                "honors_subject" => $request->honors_subject ?? null,
-                "honors_instutution" => $request->honors_instutution ?? null,
-                "honors_passing_year" => $request->honors_passing_year ?? null,
-                "honors_study_year" => $request->honors_study_year ?? null,
-                "masters_subject" => $request->masters_subject ?? null,
-                "masters_institution" => $request->masters_institution ?? null,
-                "masters_passing_year" => $request->masters_passing_year ?? null,
-                "doctorate_subject" => $request->doctorate_subject ?? null,
-                "doctorate_institution" => $request->doctorate_institution ?? null,
-                "doctorate_passing_year" => $request->doctorate_passing_year ?? null,
-                "qawmi_education_qualification" => $request->qawmi_education_qualification ?? null,
-                "ibtedai_madrasa" => $request->ibtedai_madrasa ?? null,
-                "mutawassitah_madrasa" => $request->mutawassitah_madrasa ?? null,
-                "sanabia_ulya_madrasa" => $request->sanabia_ulya_madrasa ?? null,
-                "fazilat_madrasa" => $request->fazilat_madrasa ?? null,
-                "takmil_madrasa" => $request->takmil_madrasa ?? null,
-                "takhassus_madrasa" => $request->takhassus_madrasa ?? null,
-                "qawmi_result" => $request->qawmi_result ?? null,
-                "qawmi_passing_year" => $request->qawmi_passing_year ?? null,
-                "takhassus_subject" => $request->takhassus_subject ?? null,
-                "takhassus_result" => $request->takhassus_result ?? null,
-                "takhassus_passing_year" => $request->takhassus_passing_year ?? null,
-                "others_educational_qualifications" => $request->others_educational_qualifications ?? null,
-                "deen_designations" => $request->deen_designations ?? null,
-            ]
-        );
+        // --- Helper: Bangla digits → English digits ---
+        $bnDigits = ['০','১','২','৩','৪','৫','৬','৭','৮','৯'];
+        $enDigits = ['0','1','2','3','4','5','6','7','8','9'];
+        $toEnYear = function ($v) use ($bnDigits, $enDigits) {
+            if ($v === null) return null;
+            // convert bn→en then keep only digits
+            $v = str_replace($bnDigits, $enDigits, (string)$v);
+            $v = preg_replace('/\D+/', '', $v ?? '');
+            return $v ?: null;
+        };
 
-        $biodata->education_id = $data->id;
-
-        $completed = json_decode($biodata->completed);
-        if (!in_array("family", $completed)) {
-            array_push($completed, "family");
+        // --- Pre-normalize: Year-like fields accept Bangla or English digits ---
+        // Suffixes we treat as "year" fields
+        $yearSuffixes = ['_year', '_passing_year', '_pass_year'];
+        foreach ($varchar255 as $f) {
+            foreach ($yearSuffixes as $suf) {
+                if (\Illuminate\Support\Str::endsWith($f, $suf) && $request->filled($f)) {
+                    $request->merge([$f => $toEnYear($request->input($f))]);
+                    break;
+                }
+            }
         }
-        $biodata->completed = $completed;
 
-        $biodata->save();
+        // --- Validation rules ---
+        $rules = [];
+        foreach ($varchar255 as $f) {
+            if (\Illuminate\Support\Str::endsWith($f, $yearSuffixes)) {
+                $rules[$f] = ['nullable', 'digits:4', 'regex:/^(19|20)\d{2}$/'];
+            } else {
+                $rules[$f] = ['nullable', 'string', 'max:255'];
+            }
+        }
 
-        $updateStatus = $this->updateStatus($biodata);
-        if ($updateStatus) {
-            return redirect()->route('user.my_biodata')->with('success', 'You\'r Biodata Has Been Submitted. We\'ll Approve Your Biodata Soon.');
+        // --- Bangla messages ---
+        $messages = [];
+        foreach ($varchar255 as $f) {
+            $label = $bnLabels[$f] ?? $f;
+
+            if (\Illuminate\Support\Str::endsWith($f, $yearSuffixes)) {
+                $messages["$f.digits"] = "‘{$label}’ ৪ সংখ্যার হতে হবে (যেমন 2022)।";
+                $messages["$f.regex"]  = "‘{$label}’ সঠিক বছর নয়।";
+            }
+
+            $messages["$f.string"]   = "‘{$label}’ অবশ্যই টেক্সট হতে হবে।";
+            $messages["$f.max"]      = "‘{$label}’ ২৫৫ অক্ষরের বেশি হতে পারবে না।";
+            $messages["$f.required"] = "‘{$label}’ ঘরটি পূরণ করুন।";
         }
-        if ($data && $biodata) {
-            return redirect()->back()->with(["page_id" => $page_id + 1, 'success' => 'Successfully Stored']);
-        } else {
-            return redirect()->back()->with("page_id", $page_id)->withErrors(['biodata' => 'Something Went Wrong']);
+        $request->validate($rules, $messages);
+
+        // --- Sanitize: trim & hard-limit 255 ---
+        $clean = [];
+        foreach ($varchar255 as $f) {
+            $val = $request->input($f);
+            if (is_array($val)) $val = implode(',', $val);
+            if ($val !== null) {
+                $val = trim((string) $val);
+                if (mb_strlen($val) > 255) $val = mb_substr($val, 0, 255);
+            }
+            $clean[$f] = $val ?: null;
         }
+
+        // honors_instutution → honors_institution mapping
+        if (!array_key_exists('honors_institution', $clean) || $clean['honors_institution'] === null) {
+            if (!empty($clean['honors_instutution'])) {
+                $clean['honors_institution'] = $clean['honors_instutution'];
+            }
+        }
+        unset($clean['honors_instutution']);
+
+        DB::transaction(function () use ($user_id, $clean) {
+            $biodata = Biodata::updateOrCreate(
+                ['user_id' => $user_id, 'deleted' => '0', 'admin_created' => '0'],
+                ['user_id' => $user_id]
+            );
+
+            $payload = array_merge([
+                'user_id'    => $user_id,
+                'biodata_id' => $biodata->id,
+            ], $clean);
+
+            $data = BiodataEducationInfo::updateOrCreate(
+                ['user_id' => $user_id, 'biodata_id' => $biodata->id],
+                $payload
+            );
+
+            $biodata->education_id = $data->id;
+
+            // Completed step update
+            $completed = json_decode($biodata->completed, true) ?: [];
+            if (!in_array('family', $completed, true)) {
+                $completed[] = 'family';
+            }
+            $biodata->completed = json_encode($completed);
+            $biodata->save();
+        });
+
+        return back()->with([
+            'page_id' => $page_id + 1,
+            'success' => 'শিক্ষাগত তথ্য সফলভাবে সংরক্ষিত হয়েছে। পরবর্তী ধাপে যান।',
+        ]);
     }
+
 
     public function family(Request $request)
     {
-        $request->validate([
-            "fathers_name" => "required|string",
-            "father_status" => "required|string",
-            "father_profession" => "required|string",
-            "mothers_name" => "required|string",
-            "mother_status" => "required|string",
-            "mother_profession" => "required|string",
-            "total_brother" => "required|string",
-            "total_sister" => "required|string",
-            // "total_paternal_uncle" => "required|string",
-            // "total_maternal_uncle" => "required|string",
-            "family_status" => "required|string",
-            "financial_status" => "required|string",
-            // "family_environment" => "required|string",
+        $page_id = (int) ($request->input('page_id', 0));
+        $user_id = Auth::guard('user')->id();
+
+        // --- Trim basics ---
+        $trimFields = [
+            'fathers_name','father_status','father_profession',
+            'mothers_name','mother_status','mother_profession',
+            'family_status','financial_status','family_environment',
+        ];
+        foreach ($trimFields as $f) {
+            $request->merge([$f => trim((string)$request->input($f))]);
+        }
+
+        // --- Single-pass validation (no after()) ---
+        $rules = [
+            // required strings
+            'fathers_name'       => ['required','string','max:255'],
+            'father_status'      => ['required','string','max:255'],
+            'father_profession'  => ['required','string','max:255'],
+
+            'mothers_name'       => ['required','string','max:255'],
+            'mother_status'      => ['required','string','max:255'],
+            'mother_profession'  => ['required','string','max:255'],
+
+            'family_status'      => ['required','string','max:255'],
+            'financial_status'   => ['required','string','max:255'],
+            'family_environment' => ['nullable','string','max:255'],
+
+            // only these two totals are enforced
+            'total_brother'      => ['required','integer','min:0','max:20'],
+            'total_sister'       => ['required','integer','min:0','max:20'],
+
+            // arrays (optional)
+            'brother_names'             => ['nullable','array'],
+            'brother_educations'        => ['nullable','array'],
+            'brother_jobs'              => ['nullable','array'],
+            'brother_merital_status'    => ['nullable','array'],
+            'brother_spause_profession' => ['nullable','array'],
+            'brother_spouse_education'  => ['nullable','array'],
+
+            'sister_names'              => ['nullable','array'],
+            'sister_educations'         => ['nullable','array'],
+            'sister_jobs'               => ['nullable','array'],
+            'sister_merital_status'     => ['nullable','array'],
+            'sister_spause_profession'  => ['nullable','array'],
+            'sister_spouse_education'   => ['nullable','array'],
+
+            // paternal/maternal totals — NO validation per your request
+            'total_paternal_uncle'      => ['nullable'],
+            'total_maternal_uncle'      => ['nullable'],
+
+            'paternal_uncle_names'          => ['nullable','array'],
+            'paternal_uncle_educations'     => ['nullable','array'],
+            'paternal_uncle_jobs'           => ['nullable','array'],
+            'paternal_uncle_merital_status' => ['nullable','array'],
+
+            'maternal_uncle_names'          => ['nullable','array'],
+            'maternal_uncle_educations'     => ['nullable','array'],
+            'maternal_uncle_jobs'           => ['nullable','array'],
+            'maternal_uncle_merital_status' => ['nullable','array'],
+        ];
+
+        // Per-item string rules (max:255)
+        $itemString255 = [
+            'brother_names.*','brother_educations.*','brother_jobs.*','brother_merital_status.*',
+            'brother_spause_profession.*','brother_spouse_education.*',
+            'sister_names.*','sister_educations.*','sister_jobs.*','sister_merital_status.*',
+            'sister_spause_profession.*','sister_spouse_education.*',
+            'paternal_uncle_names.*','paternal_uncle_educations.*','paternal_uncle_jobs.*','paternal_uncle_merital_status.*',
+            'maternal_uncle_names.*','maternal_uncle_educations.*','maternal_uncle_jobs.*','maternal_uncle_merital_status.*',
+        ];
+        foreach ($itemString255 as $f) {
+            $rules[$f] = ['nullable','string','max:255'];
+        }
+
+        $messages = [
+            'fathers_name.required'      => 'বাবার নাম দিন।',
+            'father_status.required'     => 'বাবার অবস্থা দিন।',
+            'father_profession.required' => 'বাবার পেশা দিন।',
+            'mothers_name.required'      => 'মায়ের নাম দিন।',
+            'mother_status.required'     => 'মায়ের অবস্থা দিন।',
+            'mother_profession.required' => 'মায়ের পেশা দিন।',
+            'family_status.required'     => 'পরিবারের অবস্থা দিন।',
+            'financial_status.required'  => 'আর্থিক অবস্থা দিন।',
+            'total_brother.required'     => 'ভাইয়ের সংখ্যা দিন।',
+            'total_sister.required'      => 'বোনের সংখ্যা দিন।',
+        ];
+
+        $request->validate($rules, $messages);
+
+        // --- Auto-correct totals from actual lists (smooth UX, no errors) ---
+        $countFilled = function ($arr) {
+            return is_array($arr) ? count(array_filter($arr, fn($x)=>trim((string)$x) !== '')) : 0;
+        };
+
+        $tb = $countFilled($request->input('brother_names'));
+        $ts = $countFilled($request->input('sister_names'));
+        $tp = $countFilled($request->input('paternal_uncle_names')) ?: null;  // keep null if empty
+        $tm = $countFilled($request->input('maternal_uncle_names')) ?: null;
+
+        $request->merge([
+            'total_brother'        => $tb,
+            'total_sister'         => $ts,
+            'total_paternal_uncle' => $tp,
+            'total_maternal_uncle' => $tm,
         ]);
 
+        // --- Build structured arrays (trim + hard-cap 255) ---
+        $cap = function ($val) {
+            $val = trim((string)$val);
+            return $val === '' ? null : mb_substr($val, 0, 255);
+        };
 
-        if ($request->total_brother != "0") {
-            $request->validate([
-                "brother_names.*" => "required|string",
-                "brother_educations.*" => "required|string",
-                "brother_jobs.*" => "required|string",
-                "brother_merital_status.*" => "required|string",
-            ]);
-        }
-        if ($request->total_sister != "0") {
-            $request->validate([
-                "sister_names.*" => "required|string",
-                "sister_educations.*" => "required|string",
-                "sister_jobs.*" => "required|string",
-                "sister_merital_status.*" => "required|string",
-            ]);
-        }
-        if ($request->has('total_paternal_uncle')) {
-            if ($request->total_paternal_uncle != "0") {
-                $request->validate([
-                    "paternal_uncle_names.*" => "required|string",
-                    "paternal_uncle_educations.*" => "required|string",
-                    "paternal_uncle_jobs.*" => "required|string",
-                    "paternal_uncle_merital_status.*" => "required|string",
-                ]);
-            }
-        }
-        if ($request->has('total_maternal_uncle')) {
-            if ($request->total_maternal_uncle != "0") {
-                $request->validate([
-                    "maternal_uncle_names.*" => "required|string",
-                    "maternal_uncle_educations.*" => "required|string",
-                    "maternal_uncle_jobs.*" => "required|string",
-                    "maternal_uncle_merital_status.*" => "required|string",
-                ]);
-            }
-        }
-
-        $page_id = $request->page_id ?? 0;
-        $user_id = Auth::guard('user')->user()->id;
-
-        $brothers = [];
-        $sisters = [];
-        $paternal_uncles = [];
-        $maternal_uncles = [];
-
-
-
-        if (
-            $request->has('brother_names') &&
-            $request->has('brother_educations') &&
-            $request->has('brother_jobs') &&
-            $request->has('brother_merital_status')
-        ) {
-            foreach ($request->brother_names as $key => $name) {
-                $array_data = [
-                    "name" => $name,
-                    "education" => array_key_exists($key, $request->brother_educations) ? $request->brother_educations[$key] : null,
-                    "job" => array_key_exists($key, $request->brother_jobs) ? $request->brother_jobs[$key] : null,
-                    "merital_status" => array_key_exists($key, $request->brother_merital_status) ? $request->brother_merital_status[$key] : null,
-                    "spause_profession" => $request->brother_spause_profession && array_key_exists($key, $request->brother_spause_profession) ? $request->brother_spause_profession[$key] : null,
-                    "spouse_education" => $request->brother_spouse_education && array_key_exists($key, $request->brother_spouse_education) ? $request->brother_spouse_education[$key] : null,
+        $zip = function($names, $edu, $jobs, $status, $spouseProf = null, $spouseEdu = null) use ($cap) {
+            $out = [];
+            $n = is_array($names) ? count($names) : 0;
+            for ($i = 0; $i < $n; $i++) {
+                $out[] = [
+                    'name'             => isset($names[$i]) ? $cap($names[$i]) : null,
+                    'education'        => is_array($edu) ? ($edu[$i] ?? null ? $cap($edu[$i]) : null) : null,
+                    'job'              => is_array($jobs) ? ($jobs[$i] ?? null ? $cap($jobs[$i]) : null) : null,
+                    'merital_status'   => is_array($status) ? ($status[$i] ?? null ? $cap($status[$i]) : null) : null,
+                    'spause_profession'=> is_array($spouseProf) ? ($spouseProf[$i] ?? null ? $cap($spouseProf[$i]) : null) : null,
+                    'spouse_education' => is_array($spouseEdu) ? ($spouseEdu[$i] ?? null ? $cap($spouseEdu[$i]) : null) : null,
                 ];
-                array_push($brothers, $array_data);
             }
-        }
+            return $out;
+        };
 
-
-        if (
-            $request->has('sister_names') &&
-            $request->has('sister_educations') &&
-            $request->has('sister_jobs') &&
-            $request->has('sister_merital_status')
-        ) {
-            foreach ($request->sister_names as $key => $name) {
-                $array_data = [
-                    "name" => $name,
-                    "education" => array_key_exists($key, $request->sister_educations) ? $request->sister_educations[$key] : null,
-                    "job" => array_key_exists($key, $request->sister_jobs) ? $request->sister_jobs[$key] : null,
-                    "merital_status" => array_key_exists($key, $request->sister_merital_status) ? $request->sister_merital_status[$key] : null,
-                    "spause_profession" => $request->sister_spause_profession && array_key_exists($key, $request->sister_spause_profession) ? $request->sister_spause_profession[$key] : null,
-                    "spouse_education" => $request->sister_spouse_education && array_key_exists($key, $request->sister_spouse_education) ? $request->sister_spouse_education[$key] : null,
-                ];
-                array_push($sisters, $array_data);
-            }
-        }
-
-        if ($request->has('total_paternal_uncle')) {
-            if (
-                $request->has('paternal_uncle_names') &&
-                $request->has('paternal_uncle_educations') &&
-                $request->has('paternal_uncle_jobs') &&
-                $request->has('paternal_uncle_merital_status')
-            ) {
-                foreach ($request->paternal_uncle_names as $key => $name) {
-                    $array_data = [
-                        "name" => $name,
-                        "education" => array_key_exists($key, $request->paternal_uncle_educations) ? $request->paternal_uncle_educations[$key] : null,
-                        "job" => array_key_exists($key, $request->paternal_uncle_jobs) ? $request->paternal_uncle_jobs[$key] : null,
-                        "merital_status" => array_key_exists($key, $request->paternal_uncle_merital_status) ? $request->paternal_uncle_merital_status[$key] : null,
-                    ];
-                    array_push($paternal_uncles, $array_data);
-                }
-            }
-        }
-        if ($request->has('total_maternal_uncle')) {
-            if (
-                $request->has('maternal_uncle_names') &&
-                $request->has('maternal_uncle_educations') &&
-                $request->has('maternal_uncle_jobs') &&
-                $request->has('maternal_uncle_merital_status')
-            ) {
-                foreach ($request->maternal_uncle_names as $key => $name) {
-                    $array_data = [
-                        "name" => $name,
-                        "education" => array_key_exists($key, $request->maternal_uncle_educations) ? $request->maternal_uncle_educations[$key] : null,
-                        "job" => array_key_exists($key, $request->maternal_uncle_jobs) ? $request->maternal_uncle_jobs[$key] : null,
-                        "merital_status" => array_key_exists($key, $request->maternal_uncle_merital_status) ? $request->maternal_uncle_merital_status[$key] : null,
-                    ];
-                    array_push($maternal_uncles, $array_data);
-                }
-            }
-        }
-
-
-
-        $biodata = Biodata::updateOrCreate(
-            ["user_id" => $user_id, "deleted" => '0', 'admin_created' => '0'],
-            [
-                "user_id" => $user_id,
-            ]
+        $brothers = $zip(
+            $request->input('brother_names'),
+            $request->input('brother_educations'),
+            $request->input('brother_jobs'),
+            $request->input('brother_merital_status'),
+            $request->input('brother_spause_profession'),
+            $request->input('brother_spouse_education')
         );
 
-        $data = BiodataFamilyInfo::updateOrCreate(
-            ["user_id" => $user_id, "biodata_id" => $biodata->id],
-            [
-                "user_id" => $user_id,
-                "biodata_id" => $biodata->id,
-
-                "fathers_name" => $request->fathers_name,
-                "father_status" => $request->father_status,
-                "father_profession" => $request->father_profession,
-
-                "mothers_name" => $request->mothers_name,
-                "mother_status" => $request->mother_status,
-                "mother_profession" => $request->mother_profession,
-
-                "total_brother" => $request->total_brother,
-                "total_sister" => $request->total_sister,
-                "total_paternal_uncle" => $request->total_paternal_uncle,
-                "total_maternal_uncle" => $request->total_maternal_uncle,
-
-                "family_status" => $request->family_status,
-                "financial_status" => $request->financial_status,
-                "family_environment" => $request->family_environment,
-
-                "brothers" => json_encode($brothers),
-                "sisters" => json_encode($sisters),
-                "paternal_uncles" => json_encode($paternal_uncles),
-                "maternal_uncles" => json_encode($maternal_uncles),
-            ]
+        $sisters = $zip(
+            $request->input('sister_names'),
+            $request->input('sister_educations'),
+            $request->input('sister_jobs'),
+            $request->input('sister_merital_status'),
+            $request->input('sister_spause_profession'),
+            $request->input('sister_spouse_education')
         );
 
-        $biodata->family_id = $data->id;
+        $zipSimple = function($names, $edu, $jobs, $status) use ($cap) {
+            $out = [];
+            $n = is_array($names) ? count($names) : 0;
+            for ($i=0; $i<$n; $i++) {
+                $out[] = [
+                    'name'           => isset($names[$i]) ? $cap($names[$i]) : null,
+                    'education'      => is_array($edu) ? ($edu[$i] ?? null ? $cap($edu[$i]) : null) : null,
+                    'job'            => is_array($jobs) ? ($jobs[$i] ?? null ? $cap($jobs[$i]) : null) : null,
+                    'merital_status' => is_array($status) ? ($status[$i] ?? null ? $cap($status[$i]) : null) : null,
+                ];
+            }
+            return $out;
+        };
 
-        $completed = json_decode($biodata->completed);
-        if (!in_array("personal", $completed)) {
-            array_push($completed, "personal");
-        }
-        $biodata->completed = $completed;
+        $paternal_uncles = $zipSimple(
+            $request->input('paternal_uncle_names'),
+            $request->input('paternal_uncle_educations'),
+            $request->input('paternal_uncle_jobs'),
+            $request->input('paternal_uncle_merital_status')
+        );
 
-        $biodata->save();
+        $maternal_uncles = $zipSimple(
+            $request->input('maternal_uncle_names'),
+            $request->input('maternal_uncle_educations'),
+            $request->input('maternal_uncle_jobs'),
+            $request->input('maternal_uncle_merital_status')
+        );
 
-        $updateStatus = $this->updateStatus($biodata);
-        if ($updateStatus) {
-            return redirect()->route('user.my_biodata')->with('success', 'You\'r Biodata Has Been Submitted. We\'ll Approve Your Biodata Soon.');
-        }
-        if ($data && $biodata) {
-            return redirect()->back()->with(["page_id" => $page_id + 1, 'success' => 'Successfully Stored']);
-        } else {
-            return redirect()->back()->with("page_id", $page_id)->withErrors(['biodata' => 'Something Went Wrong']);
-        }
+        // --- Save atomically ---
+        DB::transaction(function () use (
+            $user_id, $request, $brothers, $sisters, $paternal_uncles, $maternal_uncles
+        ) {
+            $biodata = Biodata::updateOrCreate(
+                ['user_id' => $user_id, 'deleted' => '0', 'admin_created' => '0'],
+                ['user_id' => $user_id]
+            );
+
+            $data = BiodataFamilyInfo::updateOrCreate(
+                ['user_id' => $user_id, 'biodata_id' => $biodata->id],
+                [
+                    'user_id'    => $user_id,
+                    'biodata_id' => $biodata->id,
+
+                    'fathers_name'      => $request->input('fathers_name'),
+                    'father_status'     => $request->input('father_status'),
+                    'father_profession' => $request->input('father_profession'),
+
+                    'mothers_name'      => $request->input('mothers_name'),
+                    'mother_status'     => $request->input('mother_status'),
+                    'mother_profession' => $request->input('mother_profession'),
+
+                    'total_brother'        => (int) $request->input('total_brother'),
+                    'total_sister'         => (int) $request->input('total_sister'),
+                    'total_paternal_uncle' => $request->input('total_paternal_uncle'), // optional
+                    'total_maternal_uncle' => $request->input('total_maternal_uncle'), // optional
+
+                    'family_status'      => $request->input('family_status'),
+                    'financial_status'   => $request->input('financial_status'),
+                    'family_environment' => $request->input('family_environment'),
+
+                    'brothers'         => json_encode($brothers),
+                    'sisters'          => json_encode($sisters),
+                    'paternal_uncles'  => json_encode($paternal_uncles),
+                    'maternal_uncles'  => json_encode($maternal_uncles),
+                ]
+            );
+
+            $biodata->family_id = $data->id;
+
+            $completed = json_decode($biodata->completed, true) ?: [];
+            if (!in_array('personal', $completed, true)) {
+                $completed[] = 'personal';
+            }
+            $biodata->completed = $completed;
+            $biodata->save();
+        });
+
+        return back()->with([
+            'page_id' => $page_id + 1,
+            'success' => 'পরিবারের তথ্য সংরক্ষিত হয়েছে। পরবর্তী ধাপে যান।',
+        ]);
     }
+
+    private function normalizeLocalPhone($raw) {
+        if (!$raw) return null;
+    
+        $bn = ['০','১','২','৩','৪','৫','৬','৭','৮','৯'];
+        $en = ['0','1','2','3','4','5','6','7','8','9'];
+        $phone = str_replace($bn, $en, (string)$raw);
+    
+        $phone = preg_replace('/\D/', '', $phone) ?? '';
+
+        if (strpos($phone, '00880') === 0) {
+            $phone = substr($phone, 5);
+        }
+
+        if (strpos($phone, '880') === 0) {
+            $phone = substr($phone, 3);
+        }
+
+        if (preg_match('/^1[3-9]\d{8}$/', $phone)) {
+            $phone = '0' . $phone;
+        }
+
+        if (preg_match('/^01[3-9]\d{8}$/', $phone)) {
+            return $phone;
+        }
+        return null;
+    }
+
 
     public function personal(Request $request)
     {
-        $page_id = $request->page_id ?? 0;
-        $user_id = Auth::guard('user')->user()->id;
+        $page_id = (int) ($request->input('page_id', 0));
+        $user_id = Auth::guard('user')->id();
 
-        // Handle the image upload
+        /* phone_number normalize (if present) */
+        if ($request->filled('phone_number')) {
+            $normalized = $this->normalizeLocalPhone($request->input('phone_number'));
+            $request->merge(['phone_number' => $normalized]);
+        }
+
+        /* Validate (single pass) */
+        $request->validate([
+            'dressup'             => ['nullable','string','max:255'],
+            'niqab_info'          => ['nullable','string','max:255'],
+            'beard_info'          => ['nullable','string','max:255'],
+            'above_ankle_info'    => ['nullable','string','max:255'],
+            'namaz_info'          => ['nullable','string','max:255'],
+            'namaz_waqt_info'     => ['nullable','string','max:255'],
+            'mahram_info'         => ['nullable','string','max:255'],
+            'quran_info'          => ['nullable','string','max:255'],
+            'fiqh_info'           => ['nullable','string','max:255'],
+            'enternainment_info'  => ['nullable','string','max:255'],
+            'disablity_info'      => ['nullable','string','max:255'],
+            'deen_mehnot_info'    => ['nullable','string','max:255'],
+            'mazar_concept_info'  => ['nullable','string','max:255'],
+            'islami_books'        => ['nullable','string','max:255'],
+            'favourite_alem'      => ['nullable','string','max:255'],
+            'person_category'     => ['nullable','array'],
+            'become_muslim'       => ['nullable','string','max:255'],
+            'hobby'               => ['nullable'],
+            'phone_number' => ['nullable','regex:/^01[3-9]\d{8}$/'],
+            'photo'        => ['nullable','image','mimes:jpeg,png,jpg,gif','max:2048'],
+        ], [
+            'phone_number.regex' => 'ফোন নম্বরটি 01XXXXXXXXX ফরম্যাটে দিন (বাংলা সংখ্যাও লিখতে পারেন)।',
+            'photo.image'        => 'শুধুমাত্র ইমেজ ফাইল আপলোড করতে পারবেন।',
+            'photo.mimes'        => 'ইমেজ ফরম্যাট jpeg, png, jpg বা gif হতে হবে।',
+            'photo.max'          => 'ইমেজের সাইজ সর্বোচ্চ 2MB হতে পারবে।',
+        ]);
+
+        /* Sanitize: trim + 255 hard-cap */
+        $cap = function ($v) {
+            $v = trim((string)$v);
+            return $v === '' ? null : mb_substr($v, 0, 255);
+        };
+        $payload = [
+            'dressup'             => $cap($request->input('dressup')),
+            'niqab_info'          => $cap($request->input('niqab_info')),
+            'beard_info'          => $cap($request->input('beard_info')),
+            'above_ankle_info'    => $cap($request->input('above_ankle_info')),
+            'namaz_info'          => $cap($request->input('namaz_info')),
+            'namaz_waqt_info'     => $cap($request->input('namaz_waqt_info')),
+            'mahram_info'         => $cap($request->input('mahram_info')),
+            'quran_info'          => $cap($request->input('quran_info')),
+            'fiqh_info'           => $cap($request->input('fiqh_info')),
+            'enternainment_info'  => $cap($request->input('enternainment_info')),
+            'disablity_info'      => $cap($request->input('disablity_info')),
+            'deen_mehnot_info'    => $cap($request->input('deen_mehnot_info')),
+            'mazar_concept_info'  => $cap($request->input('mazar_concept_info')),
+            'islami_books'        => $cap($request->input('islami_books')),
+            'favourite_alem'      => $cap($request->input('favourite_alem')),
+            'become_muslim'       => $cap($request->input('become_muslim')),
+            'hobby'               => $cap($request->input('hobby')),
+            'phone_number'        => $cap($request->input('phone_number')), // E.164
+            'person_category'     => json_encode($request->input('person_category') ?? []),
+        ];
+
+        /* D) Image upload (public disk, unique name, replace old) */
+        $newPhotoPath = null;
+        $newPhotoUrl  = null; // যদি পরে Blade-এ সরাসরি ইউআরএল দরকার হয়
+
         if ($request->hasFile('photo')) {
-            $request->validate([
-                'photo' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
+            $file = $request->file('photo');
+            if ($file->isValid()) {
+                $ext      = strtolower($file->getClientOriginalExtension());
+                $filename = Str::uuid()->toString().'.'.$ext;
+                $dir      = 'biodata/photos/'.$user_id;        // storage/app/public/biodata/photos/{user}
+                $newPhotoPath = $file->storeAs($dir, $filename, 'public');
+                $newPhotoUrl  = Storage::disk('public')->url($newPhotoPath); // e.g. /storage/...
+            }
+        }
+
+        /* E) Save atomically */
+        DB::transaction(function () use ($user_id, $payload, $newPhotoPath) {
+            $biodata = Biodata::updateOrCreate(
+                ['user_id' => $user_id, 'deleted' => '0', 'admin_created' => '0'],
+                ['user_id' => $user_id]
+            );
+
+            $record = BiodataPersonalInfo::firstOrNew([
+                'user_id'    => $user_id,
+                'biodata_id' => $biodata->id,
             ]);
-            $image = $request->file('photo');
-            $imageName = time() . '.' . $image->getClientOriginalExtension();
 
-            // Store the image in the 'images' directory
-            $path = $image->storeAs('images', $imageName, 'public');
-        }
+            $oldPhotoPath = $record->photo; // ধরে নিচ্ছি কলামের নাম photo
 
-        $biodata = Biodata::updateOrCreate(
-            ["user_id" => $user_id, "deleted" => '0', 'admin_created' => '0'],
-            [
-                "user_id" => $user_id,
-                // "personal_id" => $data->id
-            ]
-        );
+            foreach ($payload as $k => $v) {
+                $record->{$k} = $v;
+            }
 
-        $data = BiodataPersonalInfo::updateOrCreate(
-            ["user_id" => $user_id, "biodata_id" => $biodata->id],
-            [
-                "user_id" => $user_id,
-                "biodata_id" => $biodata->id,
-                "dressup" => $request->dressup,
-                "niqab_info" => $request->niqab_info,
-                "beard_info" => $request->beard_info,
-                "above_ankle_info" => $request->above_ankle_info,
-                "namaz_info" => $request->namaz_info,
-                "namaz_waqt_info" => $request->namaz_waqt_info,
-                "mahram_info" => $request->mahram_info,
-                "quran_info" => $request->quran_info,
-                "fiqh_info" => $request->fiqh_info,
-                "enternainment_info" => $request->enternainment_info,
-                "disablity_info" => $request->disablity_info,
-                "deen_mehnot_info" => $request->deen_mehnot_info,
-                "mazar_concept_info" => $request->mazar_concept_info,
-                "islami_books" => $request->islami_books,
-                "favourite_alem" => $request->favourite_alem,
-                "person_category" => json_encode($request->person_category ?? []),
-                "become_muslim" => $request->become_muslim,
-                "hobby" => $request->hobby,
-                "phone_number" => $request->phone_number,
-                // "photo" => $path,
-            ]
-        );
+            if ($newPhotoPath) {
+                $record->photo = $newPhotoPath; // DB-তে path রাখছি
+            }
 
-        if ($request->hasFile('photo')) {
-            $data->photo = $path;
-            $data->save();
-        }
+            $record->user_id    = $user_id;
+            $record->biodata_id = $biodata->id;
+            $record->save();
 
+            // পুরোনো ছবি ডিলিট (নতুন থাকলেই এবং path আলাদা হলে)
+            if ($newPhotoPath && $oldPhotoPath && $oldPhotoPath !== $newPhotoPath) {
+                if (Storage::disk('public')->exists($oldPhotoPath)) {
+                    Storage::disk('public')->delete($oldPhotoPath);
+                }
+            }
 
+            // wizard linkage
+            $biodata->personal_id = $record->id;
 
+            $completed = json_decode($biodata->completed, true) ?: [];
+            if (!in_array('professional', $completed, true)) {
+                $completed[] = 'professional';
+            }
+            $biodata->completed = $completed;
+            $biodata->save();
+        });
 
-        $biodata->personal_id = $data->id;
-
-        $completed = json_decode($biodata->completed);
-        if (!in_array("professional", $completed)) {
-            array_push($completed, "professional");
-        }
-        $biodata->completed = $completed;
-
-        $biodata->save();
-
-        $updateStatus = $this->updateStatus($biodata);
-        if ($updateStatus) {
-            return redirect()->route('user.my_biodata')->with('success', 'You\'r Biodata Has Been Submitted. We\'ll Approve Your Biodata Soon.');
-        }
-        if ($data && $biodata) {
-            return redirect()->back()->with(["page_id" => $page_id + 1, 'success' => 'Successfully Stored']);
-        } else {
-            return redirect()->back()->with("page_id", $page_id)->withErrors(['biodata' => 'Something Went Wrong']);
-        }
+        return back()->with([
+            'page_id' => $page_id + 1,
+            'success' => 'ব্যক্তিগত তথ্য সংরক্ষিত হয়েছে। পরবর্তী ধাপে যান।',
+        ]);
     }
 
     public function professional(Request $request)
     {
+        $page_id = (int) ($request->input('page_id', 0));
+        $user_id = Auth::guard('user')->id();
+
+        // Validation
         $request->validate([
-            "profession" => "required|string",
-            "profession_details" => "required|string",
-            "monthly_income" => "required|string",
+            'profession'         => ['required','string','max:255'],
+            'profession_details' => ['required','string','max:255'],
+            'monthly_income'     => ['required','string','max:255'],
+        ], [
+            'profession.required'         => 'পেশা লিখুন।',
+            'profession_details.required' => 'পেশার বিস্তারিত লিখুন।',
+            'monthly_income.required'     => 'মাসিক আয় লিখুন।',
+            'profession.max'              => 'পেশা ২৫৫ অক্ষরের বেশি হতে পারবে না।',
+            'profession_details.max'      => 'পেশার বিস্তারিত ২৫৫ অক্ষরের বেশি হতে পারবে না।',
+            'monthly_income.max'          => 'মাসিক আয় ২৫৫ অক্ষরের বেশি হতে পারবে না।',
         ]);
 
+        // Sanitize
+        $cap = function ($v) {
+            $v = trim((string)$v);
+            return mb_substr($v, 0, 255);
+        };
+        $profession         = $cap($request->input('profession'));
+        $profession_details = $cap($request->input('profession_details'));
+        $monthly_income     = $cap($request->input('monthly_income'));
 
-        $page_id = $request->page_id ?? 0;
-        $user_id = Auth::guard('user')->user()->id;
+        // Save atomically
+        DB::transaction(function () use ($user_id, $profession, $profession_details, $monthly_income) {
+            $biodata = Biodata::updateOrCreate(
+                ['user_id' => $user_id, 'deleted' => '0', 'admin_created' => '0'],
+                ['user_id' => $user_id]
+            );
 
-        $biodata = Biodata::updateOrCreate(
-            ["user_id" => $user_id, "deleted" => '0', 'admin_created' => '0'],
-            [
-                "user_id" => $user_id,
-            ]
-        );
+            $data = BiodataProfessionalInfo::updateOrCreate(
+                ['user_id' => $user_id, 'biodata_id' => $biodata->id],
+                [
+                    'user_id'            => $user_id,
+                    'biodata_id'         => $biodata->id,
+                    'profession'         => $profession,
+                    'profession_details' => $profession_details,
+                    'monthly_income'     => $monthly_income,
+                ]
+            );
 
-        $data = BiodataProfessionalInfo::updateOrCreate(
-            ["user_id" => $user_id, "biodata_id" => $biodata->id],
-            [
-                "user_id" => $user_id,
-                "biodata_id" => $biodata->id,
-                "profession" => $request->profession,
-                "profession_details" => $request->profession_details,
-                "monthly_income" => $request->monthly_income
-            ]
-        );
+            $biodata->professional_id = $data->id;
 
-        $biodata->professional_id = $data->id;
+            $completed = json_decode($biodata->completed, true) ?: [];
+            if (!in_array('marrage', $completed, true)) {
+                $completed[] = 'marrage';
+            }
+            $biodata->completed = json_encode($completed);
+            $biodata->save();
+        });
 
-        $completed = json_decode($biodata->completed);
-        if (!in_array("marrage", $completed)) {
-            array_push($completed, "marrage");
-        }
-        $biodata->completed = $completed;
-
-        $biodata->save();
-
-        $updateStatus = $this->updateStatus($biodata);
-        if ($updateStatus) {
-            return redirect()->route('user.my_biodata')->with('success', 'You\'r Biodata Has Been Submitted. We\'ll Approve Your Biodata Soon.');
-        }
-        if ($data && $biodata) {
-            return redirect()->back()->with(["page_id" => $page_id + 1, 'success' => 'Successfully Stored']);
-        } else {
-            return redirect()->back()->with("page_id", $page_id)->withErrors(['biodata' => 'Something Went Wrong']);
-        }
+        return back()->with([
+            'page_id' => $page_id + 1,
+            'success' => 'পেশাগত তথ্য সংরক্ষিত হয়েছে। পরবর্তী ধাপে যান।',
+        ]);
     }
 
     public function marrage(Request $request)
     {
-        $page_id = $request->page_id ?? 0;
-        $user_id = Auth::guard('user')->user()->id;
+        $page_id = (int) ($request->input('page_id', 0));
+        $user_id = Auth::guard('user')->id();
 
-        $biodata = Biodata::updateOrCreate(
-            ["user_id" => $user_id, "deleted" => '0', 'admin_created' => '0'],
-            [
-                "user_id" => $user_id,
-            ]
-        );
+        // All optional, just string|max:255
+        $fields = [
+            'wife_died_reason','why_marry_after_marrage','wife_and_childrens','wife_cover',
+            'wife_study','wife_job','where_live','expectetions_from_wife',
+            'husband_died_reason','job_interested','continue_study','continue_job',
+            'marrage_divorce_date_reason','guardian_accept','marrage_concept',
+        ];
 
-        $data = BiodataMarrageInfo::updateOrCreate(
-            ["user_id" => $user_id, "biodata_id" => $biodata->id],
-            [
-                "user_id" => $user_id,
-                "biodata_id" => $biodata->id,
-                "wife_died_reason" => $request->wife_died_reason ?? null,
-                "why_marry_after_marrage" => $request->why_marry_after_marrage ?? null,
-                "wife_and_childrens" => $request->wife_and_childrens ?? null,
-                "wife_cover" => $request->wife_cover ?? null,
-                "wife_study" => $request->wife_study ?? null,
-                "wife_job" => $request->wife_job ?? null,
-                "where_live" => $request->where_live ?? null,
-                "expectetions_from_wife" => $request->expectetions_from_wife ?? null,
-                "husband_died_reason" => $request->husband_died_reason ?? null,
-                "job_interested" => $request->job_interested ?? null,
-                "continue_study" => $request->continue_study ?? null,
-                "continue_job" => $request->continue_job ?? null,
-                "marrage_divorce_date_reason" => $request->marrage_divorce_date_reason ?? null,
-                "guardian_accept" => $request->guardian_accept ?? null,
-                "marrage_concept" => $request->marrage_concept ?? null,
-            ]
-        );
+        $rules = [];
+        foreach ($fields as $f) $rules[$f] = ['nullable','string','max:255'];
 
-        $biodata->marrage_id = $data->id;
+        $request->validate($rules);
 
-        $completed = json_decode($biodata->completed);
-        if (!in_array("expected", $completed)) {
-            array_push($completed, "expected");
-        }
-        $biodata->completed = $completed;
+        $cap = function ($v) {
+            $v = trim((string)$v);
+            return $v === '' ? null : mb_substr($v, 0, 255);
+        };
 
-        $biodata->save();
+        $clean = [];
+        foreach ($fields as $f) $clean[$f] = $cap($request->input($f));
 
-        $updateStatus = $this->updateStatus($biodata);
-        if ($updateStatus) {
-            return redirect()->route('user.my_biodata')->with('success', 'You\'r Biodata Has Been Submitted. We\'ll Approve Your Biodata Soon.');
-        }
-        if ($data && $biodata) {
-            return redirect()->back()->with(["page_id" => $page_id + 1, 'success' => 'Successfully Stored']);
-        } else {
-            return redirect()->back()->with("page_id", $page_id)->withErrors(['biodata' => 'Something Went Wrong']);
-        }
+        DB::transaction(function () use ($user_id, $clean) {
+            $biodata = Biodata::updateOrCreate(
+                ['user_id' => $user_id, 'deleted' => '0', 'admin_created' => '0'],
+                ['user_id' => $user_id]
+            );
+
+            $payload = array_merge([
+                'user_id' => $user_id,
+                'biodata_id' => $biodata->id,
+            ], $clean);
+
+            $data = BiodataMarrageInfo::updateOrCreate(
+                ['user_id' => $user_id, 'biodata_id' => $biodata->id],
+                $payload
+            );
+
+            $biodata->marrage_id = $data->id;
+
+            $completed = json_decode($biodata->completed, true) ?: [];
+            if (!in_array('expected', $completed, true)) {
+                $completed[] = 'expected';
+            }
+            $biodata->completed = json_encode($completed);
+            $biodata->save();
+        });
+
+        return back()->with([
+            'page_id' => $page_id + 1,
+            'success' => 'বিয়েসংক্রান্ত তথ্য সংরক্ষিত হয়েছে। পরবর্তী ধাপে যান।',
+        ]);
     }
 
     public function expected(Request $request)
     {
-        $page_id = $request->page_id ?? 0;
-        $user_id = Auth::guard('user')->user()->id;
+        $page_id = (int) ($request->input('page_id', 0));
+        $user_id = Auth::guard('user')->id();
 
-        $biodata = Biodata::updateOrCreate(
-            ["user_id" => $user_id, "deleted" => '0', 'admin_created' => '0'],
-            [
-                "user_id" => $user_id,
-            ]
-        );
+        $fields = [
+            'expected_age','expected_complexion','expected_height','expected_education',
+            'expect_district','groom_expected_marital_status','bride_expected_marital_status',
+            'expected_profession','expected_financial_status','expected_features',
+        ];
 
-        $data = BiodataExpectedInfo::updateOrCreate(
-            ["user_id" => $user_id, "biodata_id" => $biodata->id],
-            [
-                "user_id" => $user_id,
-                "biodata_id" => $biodata->id,
-                "expected_age" => $request->expected_age,
-                "expected_complexion" => $request->expected_complexion,
-                "expected_height" => $request->expected_height,
-                "expected_education" => $request->expected_education,
-                "expect_district" => $request->expect_district,
-                "groom_expected_marital_status" => $request->groom_expected_marital_status,
-                "bride_expected_marital_status" => $request->bride_expected_marital_status,
-                "expected_profession" => $request->expected_profession,
-                "expected_financial_status" => $request->expected_financial_status,
-                "expected_features" => $request->expected_features,
-            ]
-        );
+        $rules = [];
+        foreach ($fields as $f) $rules[$f] = ['nullable','string','max:255'];
+        $request->validate($rules);
 
-        $biodata->expected_id = $data->id;
+        $cap = function ($v) {
+            $v = trim((string)$v);
+            return $v === '' ? null : mb_substr($v, 0, 255);
+        };
 
-        $completed = json_decode($biodata->completed);
-        if (!in_array("commitment", $completed)) {
-            array_push($completed, "commitment");
-        }
-        $biodata->completed = $completed;
+        $clean = [];
+        foreach ($fields as $f) $clean[$f] = $cap($request->input($f));
 
-        $biodata->save();
+        DB::transaction(function () use ($user_id, $clean) {
+            $biodata = Biodata::updateOrCreate(
+                ['user_id' => $user_id, 'deleted' => '0', 'admin_created' => '0'],
+                ['user_id' => $user_id]
+            );
 
-        $updateStatus = $this->updateStatus($biodata);
-        if ($updateStatus) {
-            return redirect()->route('user.my_biodata')->with('success', 'You\'r Biodata Has Been Submitted. We\'ll Approve Your Biodata Soon.');
-        }
-        if ($data && $biodata) {
-            return redirect()->back()->with(["page_id" => $page_id + 1, 'success' => 'Successfully Stored']);
-        } else {
-            return redirect()->back()->with("page_id", $page_id)->withErrors(['biodata' => 'Something Went Wrong']);
-        }
+            $payload = array_merge([
+                'user_id' => $user_id,
+                'biodata_id' => $biodata->id,
+            ], $clean);
+
+            $data = BiodataExpectedInfo::updateOrCreate(
+                ['user_id' => $user_id, 'biodata_id' => $biodata->id],
+                $payload
+            );
+
+            $biodata->expected_id = $data->id;
+
+            $completed = json_decode($biodata->completed, true) ?: [];
+            if (!in_array('commitment', $completed, true)) {
+                $completed[] = 'commitment';
+            }
+            $biodata->completed = json_encode($completed);
+            $biodata->save();
+        });
+
+        return back()->with([
+            'page_id' => $page_id + 1,
+            'success' => 'প্রত্যাশিত জীবনসাথী সম্পর্কিত তথ্য সংরক্ষিত হয়েছে।',
+        ]);
     }
+
 
     public function commitment(Request $request)
     {
+        $page_id = (int) ($request->input('page_id', 0));
+        $user_id = Auth::guard('user')->id();
 
         $request->validate([
-            "gurdian_aknowledgement" => "required|string",
-            "all_data_valid" => "required|string",
-            "responsibility" => "required|string",
+            'gurdian_aknowledgement' => ['required','string','max:255'],
+            'all_data_valid'         => ['required','string','max:255'],
+            'responsibility'         => ['required','string','max:255'],
+        ], [
+            'gurdian_aknowledgement.required' => 'অভিভাবকের সম্মতি নিশ্চিত করুন।',
+            'all_data_valid.required'         => 'তথ্যগুলোর সত্যতা নিশ্চিত করুন।',
+            'responsibility.required'         => 'দায়বদ্ধতা নিশ্চিত করুন।',
         ]);
 
-        $page_id = $request->page_id ?? 0;
-        $user_id = Auth::guard('user')->user()->id;
+        $cap = function ($v) {
+            $v = trim((string)$v);
+            return mb_substr($v, 0, 255);
+        };
 
-        $biodata = Biodata::updateOrCreate(
-            ["user_id" => $user_id, "deleted" => '0', 'admin_created' => '0'],
-            [
-                "user_id" => $user_id,
-            ]
-        );
+        $gurdian_aknowledgement = $cap($request->input('gurdian_aknowledgement'));
+        $all_data_valid         = $cap($request->input('all_data_valid'));
+        $responsibility         = $cap($request->input('responsibility'));
 
-        $data = BiodataCommitmentInfo::updateOrCreate(
-            ["user_id" => $user_id, "biodata_id" => $biodata->id],
-            [
-                "user_id" => $user_id,
-                "biodata_id" => $biodata->id,
-                "gurdian_aknowledgement" => $request->gurdian_aknowledgement,
-                "all_data_valid" => $request->all_data_valid,
-                "responsibility" => $request->responsibility,
-            ]
-        );
+        DB::transaction(function () use ($user_id, $gurdian_aknowledgement, $all_data_valid, $responsibility) {
+            $biodata = Biodata::updateOrCreate(
+                ['user_id' => $user_id, 'deleted' => '0', 'admin_created' => '0'],
+                ['user_id' => $user_id]
+            );
 
-        $biodata->commitment_id = $data->id;
+            $data = BiodataCommitmentInfo::updateOrCreate(
+                ['user_id' => $user_id, 'biodata_id' => $biodata->id],
+                [
+                    'user_id'                 => $user_id,
+                    'biodata_id'              => $biodata->id,
+                    'gurdian_aknowledgement'  => $gurdian_aknowledgement,
+                    'all_data_valid'          => $all_data_valid,
+                    'responsibility'          => $responsibility,
+                ]
+            );
 
-        $completed = json_decode($biodata->completed);
-        if (!in_array("contact", $completed)) {
-            array_push($completed, "contact");
-        }
-        $biodata->completed = $completed;
+            $biodata->commitment_id = $data->id;
 
-        $biodata->save();
+            $completed = json_decode($biodata->completed, true) ?: [];
+            if (!in_array('contact', $completed, true)) {
+                $completed[] = 'contact';
+            }
+            $biodata->completed = json_encode($completed);
+            $biodata->save();
+        });
 
-        $updateStatus = $this->updateStatus($biodata);
-        if ($updateStatus) {
-            return redirect()->route('user.my_biodata')->with('success', 'You\'r Biodata Has Been Submitted. We\'ll Approve Your Biodata Soon.');
-        }
-        if ($data && $biodata) {
-            return redirect()->back()->with(["page_id" => $page_id + 1, 'success' => 'Successfully Stored']);
-        } else {
-            return redirect()->back()->with("page_id", $page_id)->withErrors(['biodata' => 'Something Went Wrong']);
-        }
+        return back()->with([
+            'page_id' => $page_id + 1,
+            'success' => 'কমিটমেন্ট তথ্য সংরক্ষিত হয়েছে। পরবর্তী ধাপে যান।',
+        ]);
     }
 
     public function contact(Request $request)
     {
-        $page_id = $request->page_id ?? 0;
-        $user_id = Auth::guard('user')->user()->id;
 
-        $biodata = Biodata::updateOrCreate(
-            ["user_id" => $user_id, "deleted" => '0', 'admin_created' => '0'],
-            [
-                "user_id" => $user_id,
-            ]
-        );
+        $page_id = (int) ($request->input('page_id', 0));
+        $user_id = Auth::guard('user')->id();
 
-        $data = BiodataContactInfo::updateOrCreate(
-            ["user_id" => $user_id, "biodata_id" => $biodata->id],
-            [
-                "user_id" => $user_id,
-                "biodata_id" => $biodata->id,
-                "bride_name" => $request->bride_name,
-                "groom_name" => $request->groom_name,
-                "gurdian_phone" => $request->gurdian_phone,
-                "gurdian_whatsapp" => $request->gurdian_whatsapp,
-                "gurdian_name" => $request->gurdian_name,
-                "gurdian_relation" => $request->gurdian_relation,
-                "biodata_email" => $request->biodata_email,
-            ]
-        );
+        $gurdian_phone    = $this->normalizeLocalPhone($request->input('gurdian_phone'));
+        $gurdian_whatsapp = $this->normalizeLocalPhone($request->input('gurdian_whatsapp'));
+
+        $request->merge([
+            'gurdian_phone'    => $gurdian_phone,
+            'gurdian_whatsapp' => $gurdian_whatsapp,
+        ]);
+
+        // Validation
+        $request->validate([
+            'bride_name'        => ['nullable','string','max:255'],
+            'groom_name'        => ['nullable','string','max:255'],
+            'gurdian_name'      => ['nullable','string','max:255'],
+            'gurdian_relation'  => ['nullable','string','max:255'],
+            'biodata_email'     => ['nullable','string','email','max:255'],
+
+            // phones optional but format-checked if present
+           'gurdian_phone'     => ['nullable','regex:/^01[3-9]\d{8}$/'],
+           'gurdian_whatsapp'  => ['nullable','regex:/^01[3-9]\d{8}$/'],
+        ], [
+            'gurdian_phone.regex'    => 'অভিভাবকের ফোন নম্বরটি 01XXXXXXXXX ফরম্যাটে দিন (বাংলা সংখ্যাও লিখতে পারেন)।',
+            'gurdian_whatsapp.regex' => 'অভিভাবকের হোয়াটসঅ্যাপ নম্বরটি 01XXXXXXXXX ফরম্যাটে দিন (বাংলা সংখ্যাও লিখতে পারেন)।',
+            'biodata_email.email'    => 'বৈধ ইমেইল ঠিকানা দিন।',
+        ]);
+
+        $cap = function ($v) {
+            $v = trim((string)$v);
+            return $v === '' ? null : mb_substr($v, 0, 255);
+        }; 
+
+        $payload = [
+            'bride_name'        => $cap($request->input('bride_name')),
+            'groom_name'        => $cap($request->input('groom_name')),
+            'gurdian_phone'     => $cap($request->input('gurdian_phone')),
+            'gurdian_whatsapp'  => $cap($request->input('gurdian_whatsapp')),
+            'gurdian_name'      => $cap($request->input('gurdian_name')),
+            'gurdian_relation'  => $cap($request->input('gurdian_relation')),
+            'biodata_email'     => $cap($request->input('biodata_email')),
+        ];
 
 
+        DB::transaction(function () use ($user_id, $payload) {
+            $biodata = Biodata::updateOrCreate(
+                ['user_id' => $user_id, 'deleted' => '0', 'admin_created' => '0'],
+                ['user_id' => $user_id]
+            );
 
-        $biodata->contact_id = $data->id;
-        $biodata->save();
+            $data = BiodataContactInfo::updateOrCreate(
+                ['user_id' => $user_id, 'biodata_id' => $biodata->id],
+                array_merge([
+                    'user_id'    => $user_id,
+                    'biodata_id' => $biodata->id,
+                ], $payload)
+            );
 
-        $updateStatus = $this->updateStatus($biodata);
-        if ($updateStatus) {
-            return redirect()->route('user.my_biodata')->with('success', 'You\'r Biodata Has Been Submitted. We\'ll Approve Your Biodata Soon.');
-        }
-        if ($data && $biodata) {
-            return redirect()->back()->with(["page_id" => $page_id, 'success' => 'Successfully Stored']);
-        } else {
-            return redirect()->back()->with("page_id", $page_id)->withErrors(['biodata' => 'Something Went Wrong']);
-        }
+            $biodata->contact_id = $data->id;
+            $biodata->save();
+        });
+
+        return back()->with([
+            'page_id' => $page_id,
+            'show_final_modal'  => true,
+        ]);
     }
+
+
 }

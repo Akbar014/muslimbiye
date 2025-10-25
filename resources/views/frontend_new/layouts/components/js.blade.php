@@ -19,6 +19,7 @@
 <script type="text/javascript" src="{{ asset('assets/frontend_new/js/js-ordhekdeen-frontend.min.js') }}"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
+
 <script>
     const districtsBn = {
         'Barguna': 'বরগুনা',

@@ -238,7 +238,7 @@ public function existingUserLogin(Request $request)
     if (session()->has('redirect')) {
         return redirect()->to(session('redirect'));
     }
-    return redirect()->route('user.edit_biodata.index')->with('success', 'Welcome to Muslim Biye!');
+    return redirect()->route('user.edit_biodata.index')->with('success', 'মুসলিম বিয়ে-তে আপনাকে আন্তরিক স্বাগতম!');
 }
 
 
@@ -375,9 +375,9 @@ public function existingUserLogin(Request $request)
                 Cookie::queue('access_token', $token, 4500);
 
                 if (session()->has('redirect')) {
-                    return redirect()->to(session('redirect'))->with('success', 'Welcome to Muslim Biye!');
+                    return redirect()->to(session('redirect'))->with('success', 'মুসলিম বিয়ে-তে আপনাকে আন্তরিক স্বাগতম!');
                 }
-                return redirect()->route('user.edit_biodata.index')->with('success', 'Welcome to Muslim Biye!');
+                return redirect()->route('user.edit_biodata.index')->with('success', 'মুসলিম বিয়ে-তে আপনাকে আন্তরিক স্বাগতম!');
             }
 
             $errors = ['email' => 'Sorry! You Can Not Login'];

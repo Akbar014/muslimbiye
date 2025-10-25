@@ -40,6 +40,7 @@ class CreateBiodatasTable extends Migration
             // 2 = Approved
             // 3 = Suspected
             // 4 = Married
+            // 5 = Postponed
             $table->timestamps();
         });
     }

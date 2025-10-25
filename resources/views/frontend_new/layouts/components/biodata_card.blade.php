@@ -45,13 +45,10 @@
         </div>
         <div class="odbcebc-content">
 
-
-
             <div class="each-item">
                 <label>@lang('site.date_of_birth')</label>
                 <p>{{ \Carbon\Carbon::parse($biodata->general()->birthdate)->format('F Y') }}</p>
             </div>
-
 
             <div class="each-item">
                 <label>@lang('site.height_only')</label>
@@ -68,11 +65,40 @@
             </div>
 
 
-
-            <div class="odbcebc-button">
-                <a href="{{ route('frontend.biodata_details', $biodata->id) }}" class="od-button"
+            {{-- <div class="odbcebc-button">
+                <a onclick="loginAlertModal()" href="{{ route('frontend.biodata_details', $biodata->id) }}" class="od-button"
                     target="_blank">@lang('site.full_biodata')</a>
-            </div>
+            </div> --}}
+
+            {{-- <div class="odbcebc-button">
+            <a href="{{ route('frontend.biodata_details', $biodata->id) }}"
+                class="od-button"
+                onclick="return loginAlertModal(event, '{{ route('frontend.biodata_details', $biodata->id) }}');">
+                @lang('site.full_biodata')
+            </a>
+            </div> --}}
+
+
+
+        <div class="odbcebc-button">
+            @if ($canViewDetails)
+                <a href="{{ route('frontend.biodata_details', $biodata->id) }}"
+                class="od-button"
+                onclick="return openLoginAlert(event, '{{ route('frontend.biodata_details', $biodata->id) }}');">
+                @lang('site.full_biodata')
+                </a>
+            @else
+                <a href="{{ route('user.auth.login') }}"
+                class="od-button"
+                onclick="return openApproval(event, '{{ route('user.auth.login') }}');">
+                @lang('site.full_biodata')
+                </a>
+            @endif
+        </div>
+
+
         </div>
     </div>
 </div>
+
+

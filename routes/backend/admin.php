@@ -13,6 +13,14 @@ use Illuminate\Support\Facades\Route;
 Route::get('/dashboard', 'DashboardController@index')->name('dashboard');
 Route::get('/biodata-stats', 'DashboardController@getBiodataStats')->name('biodata.stats');
 
+
+Route::post('/admin/biodata/{biodata}/approve', 'BiodataStatusController@approve')->name('backend.admin.biodata.approve');
+Route::post('/admin/biodata/{biodata}/postpone', 'BiodataStatusController@postpone')->name('backend.admin.biodata.postpone');
+Route::delete('/admin/biodata/{biodata}', 'BiodataStatusController@destroy')->name('backend.admin.biodata.delete');
+Route::get('/admin/biodata/{biodata}/edit', 'BiodataStatusController@edit')->name('backend.admin.biodata.edit');
+Route::put('/admin/biodata/{id}', 'BiodataStatusController@update')->name('backend.admin.biodata.update');
+
+
 // Admin
 Route::get('/alladmin', 'AdminController@alladmin')->name('admin.index');
 Route::get('/alladmin/get', 'AdminController@alladminGet')->name('alladmin.admin');

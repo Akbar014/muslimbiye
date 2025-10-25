@@ -31,6 +31,7 @@ class UserDashboardController extends Controller
     public function index()
     {
         $incomplete_biodata = Biodata::where(['user_id' => Auth::guard("user")->user()->id, 'deleted' => "0", 'admin_created' => '0'])->first();
+
         $user = Auth::guard('user')->user();
         $coupon_usages = CouponUsage::where(['user_id' => $user->id])->first();
         return view('frontend_new.user.dashboard.index', compact('incomplete_biodata', 'coupon_usages'));
@@ -42,7 +43,7 @@ class UserDashboardController extends Controller
         $user_id = Auth::guard('user')->user()->id;
         $biodata = Biodata::where(['user_id' => $user_id, 'deleted' => "0", 'admin_created' => '0'])->first();
         if (!$biodata) {
-            return redirect()->route('user.edit_biodata.index')->withErrors(['Error' => 'You Don\'t Have Any Biodata, Please Create One.']);
+            return redirect()->route('user.edit_biodata.index')->withErrors(['Error' => 'আপনার কোনো বায়োডাটা নেই! অনুগ্রহ করে আগে একটি বায়োডাটা তৈরি করুন।']);
         }
         return view('frontend_new.user.my_biodata.index', compact('biodata'));
     }

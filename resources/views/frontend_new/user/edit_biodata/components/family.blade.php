@@ -1,4 +1,4 @@
-div<div class="od-biodata-form-content nav_page">
+<div class="od-biodata-form-content nav_page">
     <div class="oddb-title">
         <h2 class="text-secondary-color-alter text-center">@lang('site.family_information')</h2>
     </div>

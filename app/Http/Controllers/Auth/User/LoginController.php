@@ -187,7 +187,10 @@ class LoginController extends Controller
                return redirect()->to(session('redirect'));
             }
             // return redirect()->route('user.dashboard');
-              return redirect()->route('user.edit_biodata.index')->with('success', 'Welcome to Muslim Biye!');
+            return redirect()->route('user.edit_biodata.index')
+              ->with([
+               'success' => 'মুসলিম বিয়ে-তে আপনাকে আন্তরিক স্বাগতম!', 'show_login_modal' => true
+              ]);
          } else {
             // if unsuccessful, then redirect back to the login with the form data
             $err = ['email' => 'Sorry! You Can Not Login'];
@@ -317,10 +320,12 @@ class LoginController extends Controller
                $token = $user->createToken('userApiToken')->accessToken;
                Cookie::queue('access_token', $token, 4500);
                if (session()->has('redirect')) {
-                  return redirect()->to(session('redirect'))->with('success', 'Welcome to Muslim Biye!');
+                  return redirect()->to(session('redirect'))->with('success', 'মুসলিম বিয়ে-তে আপনাকে আন্তরিক স্বাগতম!');
                }
-            //   return redirect()->route('user.dashboard')->with('success', 'Welcome to Muslim Biye!');
-              return redirect()->route('user.edit_biodata.index')->with('success', 'Welcome to Muslim Biye!');
+            //   return redirect()->route('user.dashboard')->with('success', 'মুসলিম বিয়ে-তে আপনাকে আন্তরিক স্বাগতম!');
+              return redirect()->route('user.edit_biodata.index')->with([
+               'success' => 'মুসলিম বিয়ে-তে আপনাকে আন্তরিক স্বাগতম!', 'show_login_modal' => true
+              ]);
             } else {
                // if unsuccessful, then redirect back to the login with the form data
                $errors = ['email' => 'Sorry! You Can Not Login'];
@@ -350,7 +355,7 @@ class LoginController extends Controller
       Auth::guard('user')->logout();
       $request->session()->invalidate();
       $request->session()->regenerateToken();
-      return redirect()->route('user.auth.login')->with('success', 'See You Soon!');
+      return redirect()->route('user.auth.login')->with('success', 'আবার খুব শিগগিরই দেখা হবে ইনশাআল্লাহ!');
    }
 
 }

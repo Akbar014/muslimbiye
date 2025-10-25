@@ -2,14 +2,14 @@
 
 namespace App\Http\Controllers\Frontend;
 
-use App\Http\Controllers\Controller;
-use App\Models\Admin;
-use App\Models\BioData;
-use App\Models\Biodata as NewBiodata;
 use App\Models\Blog;
+use App\Models\Admin;
+use App\Models\Biodata;
 use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\View;
+use App\Models\Biodata as NewBiodata;
 
 
 
@@ -39,12 +39,17 @@ class HomeController extends Controller
    }
    public function biodata_details($id)
    {
-      $biodata = NewBiodata::where(["id" => $id, "deleted" => '0'])->first();
+      $biodata = Biodata::where(["id" => $id, "deleted" => '0'])->first();
       if (!$biodata || $biodata->status != 2) {
-         return abort(404);
+          return response()
+            ->view('frontend_new.unavailable.index', [
+                'id'      => $id,
+                'biodata' => $biodata, // null বা pending হতে পারে
+            ], 404);
       }
       $biodata->visit_count += 1;
       $biodata->save();
+
       return View::make('frontend_new.biodata_details.index', compact('biodata'));
       // return View::make('frontend.biodata_details.biodata_details',compact('biodata'));
    }

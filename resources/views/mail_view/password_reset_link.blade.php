@@ -66,7 +66,7 @@
       <p>Hi there,</p>
       <p>
         We received a request to reset your password for your
-        <strong>{{ config('app.name', 'muslimBiye') }}</strong> account.
+        <strong>{{ config('app.name', 'muslimbiye') }}</strong> account.
         Click the button below to choose a new password.
       </p>
 
@@ -80,7 +80,7 @@
       </p>
 
       <div class="footer">
-        © {{ date('Y') }} {{ config('app.name', 'muslimBiye') }}. All rights reserved.
+        © {{ date('Y') }} {{ config('app.name', 'muslimbiye') }}. All rights reserved.
       </div>
     </div>
   </div>

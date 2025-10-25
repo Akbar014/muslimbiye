@@ -57,6 +57,10 @@ $setting = App\Models\Setting::first();
         <div class="row">
             <div class="col-md-1"></div>
             <div class="col-md-10 col-sm-12 col-xs-12">
+                
+                <h2 class="!mb-5 !mt-5 text-center" style="color: #FF2ADE; margin-bottom:15px; font-family: 'Hind Siliguri';
+    font-weight: 700;"> উপযুক্ত জীবনসঙ্গী  <span style="color:#2F4AB3;">খুঁজে নিন</span><br></h2>
+
                 <div class="search_registerBG">
                     <form action="{{ route('frontend.searchSubmit') }}" method="post">
                         @csrf
@@ -205,42 +209,9 @@ $setting = App\Models\Setting::first();
                                             </div>
                                         </div>
                                     </div>
-                            </div>
+                            </div>                            
 
-
-                            <style>
-                            .custom-modal {
-                                display: none;
-                                position: fixed;
-                                z-index: 9999;
-                                left: 0;
-                                top: 0;
-                                width: 100%;
-                                height: 100%;
-                                background: rgba(0, 0, 0, 0.5);
-                                justify-content: center;
-                                align-items: center;
-                            }
-
-                            .custom-modal-content {
-                                background: #fff;
-                                padding: 20px;
-                                border-radius: 8px;
-                                text-align: center;
-                                width: 400px;
-                                max-width: 90%;
-                                box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
-                            }
-
-                            .close-btn {
-                                float: right;
-                                font-size: 24px;
-                                font-weight: bold;
-                                cursor: pointer;
-                            }
-                            </style>
-
-                            <div class="col-md-1 col-sm-12 col-xs-12 pad-0 hidden-sm hidden-xs"
+                            {{-- <div class="col-md-1 col-sm-12 col-xs-12 pad-0 hidden-sm hidden-xs"
                                 style="padding-left: 0px">
                                 <div class="search-button">
                                     <!-- Search Button -->
@@ -265,6 +236,17 @@ $setting = App\Models\Setting::first();
                                         @lang('site.search')
                                     </a>
                                     @endif
+                                </div>
+                            </div> --}}
+
+
+                           <div class="col-md-1 col-sm-12 col-xs-12 pad-0 hidden-sm hidden-xs"
+                                style="padding-left: 0px">
+                                <div class="search-button">                
+                                        <button type="submit" class="searchnow" onclick="find_match()"
+                                            style="cursor:pointer;">
+                                            @lang('site.search')
+                                        </button>  
                                 </div>
                             </div>
 
@@ -296,7 +278,7 @@ $setting = App\Models\Setting::first();
                                     </a>
                                     @endif
                                     @else
-                                    <a class=" searchnow od-button signin-button" onclick="loginAlertModal()"
+                                    <a class=" searchnow od-button signin-button"
                                         style="cursor:pointer;">
                                         @lang('site.search')
                                     </a>
@@ -306,111 +288,6 @@ $setting = App\Models\Setting::first();
                             </div>
                         </div>
 
-                        <div id="approvalModal" class="custom-modal">
-                            <div class="custom-modal-content">
-                                <span id="closeModalBtn" class="close-btn">&times;</span>
-                                <h2 style="
-                                    background: linear-gradient(217deg, #1f0785 0%, #af2199 100%);
-                                    -webkit-background-clip: text;
-                                    -webkit-text-fill-color: transparent;    padding: 5px; 
-                                ">
-                                    মুসলিম বিয়ে
-                                </h2>
-
-                                <p style="color: black;"> আপনার বায়োডাটা সাবমিট করুন।</p>
-                                <p style="color: black;">!!! বায়োডাটা সাবমিট করলে আপনি পাচ্ছেন ১০ টি এক্সক্লুসিভ কানেকশন
-                                    একদম ফ্রি !!!
-                                <p>
-                                    <button class="btn btn-info mt-2 create-bio">
-
-                                        <a href="{{ route('user.edit_biodata.index') }}"
-                                            class="col-span-12 sm:col-span-6 bg-button-color !text-white font-bold text-center drop-shadow-none shadow-slate-600 hover:drop-shadow-lg rounded-md gap-2 p-4 w-full h-[60px] flex items-center justify-center max-w-[425px] !no-underline !text-[1rem] sm:!text-[1.2rem]">
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="1.2rem" height="1.2rem"
-                                                viewBox="0 0 16 16">
-                                                <path fill="white" d="M7 7V.5h2V7h6.5v2H9v6.5H7V9H.5V7z"></path>
-                                            </svg> বায়োডাটা তৈরি করুন
-                                        </a>
-                                    </button>
-
-                            </div>
-                        </div>
-
-                        <div id="loginAlertModal" class="custom-modal">
-                            <div class="custom-modal-content">
-                                <span id="closeModalBtn2" class="close-btn">&times;</span>
-                                <h3 style="
-                                    background: linear-gradient(217deg, #1f0785 0%, #af2199 100%);
-                                    -webkit-background-clip: text;
-                                    -webkit-text-fill-color: transparent;    padding: 5px;  
-                                ">
-                                    মুসলিম বিয়ে
-                                </h3>
-
-                                <!--<p style="color: black;">  বায়োডাটা দেখতে লগইন করুন।</p>-->
-                                <!--<p style="color: black;">!!! বায়োডাটা সাবমিট করলে আপনি পাচ্ছেন ১০ টি এক্সক্লুসিভ কানেকশন একদম ফ্রি !!!<p>-->
-
-                                <p style="color: black" ;> একটি বিশ্বস্ত ও নিরাপদ পরিবেশ বজায় রাখতে আমরা শুধুমাত্র
-                                    ভেরিফায়েড সদস্যদের বায়োডাটা প্রদর্শন করি। তাই অন্যদের বায়োডাটা দেখতে হলে আপনার
-                                    বায়োডাটা সাবমিট করুন!</p>
-
-                                <p style="color: black;margin-bottom: 6px;">!!! বায়োডাটা এপ্রুভ হলে আপনি পাবেন ৳১,০০০
-                                    মূল্যের ১০টি এক্সক্লুসিভ কানেকশন — একদম ফ্রি !!!
-                                <p>
-                                    <button class="btn btn-info mt-4 create-bio">
-
-                                        <a href="{{ route('user.auth.login') }}"
-                                            class="col-span-12 sm:col-span-6 bg-button-color !text-white font-bold text-center drop-shadow-none shadow-slate-600 hover:drop-shadow-lg rounded-md gap-2 p-4 w-full h-[60px] flex items-center justify-center max-w-[425px] !no-underline !text-[1rem] sm:!text-[1.2rem]">
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="1.2rem" height="1.2rem"
-                                                viewBox="0 0 16 16">
-                                                <path fill="white" d="M7 7V.5h2V7h6.5v2H9v6.5H7V9H.5V7z"></path>
-                                            </svg> &nbsp বায়োডাটা সাবমিট করুন
-                                        </a>
-                                    </button>
-
-                            </div>
-                        </div>
-
-                        <script>
-                        function registerModal() {
-                            let modal = document.getElementById("approvalModal");
-                            let closeBtn = document.getElementById("closeModalBtn");
-
-                            // Modal দেখাবো
-                            modal.style.display = "flex";
-
-                            // Close button click করলে
-                            closeBtn.onclick = function() {
-                                modal.style.display = "none";
-                            };
-
-                            // Window click করলে (modal er বাইরে)
-                            window.onclick = function(event) {
-                                if (event.target === modal) {
-                                    modal.style.display = "none";
-                                }
-                            };
-                        }
-
-                        function loginAlertModal() {
-                            let modal = document.getElementById("loginAlertModal");
-                            let closeBtn = document.getElementById("closeModalBtn2");
-
-                            // Modal দেখাবো
-                            modal.style.display = "flex";
-
-                            // Close button click করলে
-                            closeBtn.onclick = function() {
-                                modal.style.display = "none";
-                            };
-
-                            // Window click করলে (modal er বাইরে)
-                            window.onclick = function(event) {
-                                if (event.target === modal) {
-                                    modal.style.display = "none";
-                                }
-                            };
-                        }
-                        </script>
 
 
                         <!--<div
@@ -1342,23 +1219,7 @@ $setting = App\Models\Setting::first();
 <!--  </div>-->
 
 
-<div class="login-modal-overlay" id="loginModal">
-    <div class="video-modal-content">
-        Modal Header
-        <div class="modal-header">
-            <div>
-                <span class="announcement-text">Announcement</span>
-            </div>
-            <button class="modal-close-btn" id="closeModalBtn">&times;</button>
-        </div>
 
-        Modal Video
-        <div class="modal-video-container">
-            <p>মুসলিম বিয়েতে আপনাকে স্বাগতম।</p>
-            <h3>বায়োডাটা দেখতে অনুগ্রহ করে লগিন করুন।</h3>
-        </div>
-    </div>
-</div>
 
 
 <!-- ========================================================= -->

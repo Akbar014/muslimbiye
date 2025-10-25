@@ -23,6 +23,7 @@ class SearchController extends Controller
 
     public function search(Request $request)
     {
+        // dd($request->all());
         if ($request->session()->has('search')) {
             $searchQuery = session()->get('search');
             if ($searchQuery['biodata_no']) {
@@ -65,6 +66,74 @@ class SearchController extends Controller
         }
     }
 
+    // public function search(Request $request)
+    // {
+    //     if ($request->session()->has('search')) {
+    //         $searchQuery = session()->get('search');
+
+    //         if (!empty($searchQuery['biodata_no'])) {
+    //             $result = NewBiodata::where([
+    //                 'status'  => '2',
+    //                 'code'    => $searchQuery['biodata_no'],
+    //                 'deleted' => '0',
+    //             ])->paginate(6);
+
+    //         } else {
+    //             // base query
+    //             $general = BiodataGeneralInfo::query()
+    //                 ->whereNotNull('user_id');
+
+    //             if (!empty($searchQuery['biodata_type']) && $searchQuery['biodata_type'] !== 'all') {
+    //                 $general->whereIn('biodata_type', [$searchQuery['biodata_type']]);
+    //             }
+
+    //             if (!empty($searchQuery['marital_status'])) {
+    //                 $general->where('marital_status', $searchQuery['marital_status']);
+    //             }
+
+    //             if (!empty($searchQuery['bride_groom']) && $searchQuery['bride_groom'] !== 'all') {
+    //                 $general->whereIn('bride_groom', [$searchQuery['bride_groom']]);
+    //             }
+
+    //             // eager load to avoid N+1
+    //             $rows = $general
+    //                 ->with([
+    //                     'biodataRef:id,status,deleted',
+    //                     'biodataAddressRef: id,biodata_id,parmanent_zella'
+    //                 ])
+    //                 ->get();
+
+    //             $locationFilteredBiodata = [];
+    //             $wantDistrict = $searchQuery['district'] ?? null;
+
+    //             foreach ($rows as $item) {
+    //                 $b = $item->biodataRef;
+    //                 if (!$b || $b->deleted !== '0' || $b->status !== '2') {
+    //                     continue;
+    //                 }
+
+    //                 if ($wantDistrict) {
+    //                     $addr = $item->biodataAddressRef;
+    //                     if ($addr && $addr->parmanent_zella == $wantDistrict) {
+    //                         $locationFilteredBiodata[] = $b;
+    //                     }
+    //                 } else {
+    //                     $locationFilteredBiodata[] = $b;
+    //                 }
+    //             }
+
+    //             $totalCount = count($locationFilteredBiodata);
+
+    //             $result = $this->paginate($locationFilteredBiodata);
+    //         }
+
+    //         return view('frontend_new.search.index', compact('result', 'totalCount'));
+    //     }
+
+    //     return redirect()->route('frontend.home')->with('error', 'somtheing wrong');
+    // }
+
+
     public function searchSubmit(Request $request)
     {
         // dd($request->all());
@@ -82,6 +151,7 @@ class SearchController extends Controller
         ]);
         return redirect()->route('frontend.search');
     }
+    
     public function search_slug($slug)
     {
         $result = BioData::where('bride_groom', $slug)->where('status', '1')->paginate(6);

@@ -333,10 +333,18 @@
                         <span class="od-required-label">*</span></label>
                 </div>
 
-                <div class="od-form-group-input od-custom-text_box">
-                    <input type="text" name="phone_number" id="phone_number" class="od-field-type__textbox"
-                        placeholder="01700-000000" value="{{ isset($personal) ? $personal->phone_number : '' }}" required />
-                </div>
+                @if ($personal && $personal->phone_number)
+                    <div class="od-form-group-input od-custom-text_box">
+                        <input type="text" name="phone_number" id="phone_number" class="od-field-type__textbox"
+                            value="{{ isset($personal) ? $personal->phone_number : '' }}" required />
+                    </div>
+                 @else
+                    <div class="od-form-group-input od-custom-text_box">
+                        <input type="text" name="phone_number" id="phone_number" class="od-field-type__textbox"
+                            placeholder="01700-000000" required />
+                    </div>                    
+                @endif
+
 
                 <div class="od-field-desc od-pt-10">
                     <p>
@@ -365,13 +373,24 @@
                         <img class="w-20 max-h-20 hidden cursor-pointer" title="Click To Remove" id="photo_viewer"
                             accept="image/*">
                     </div>
-                    @if (isset($personal) && $personal->photo)
+                    {{-- @if (isset($personal) && $personal->photo)
                     <h2>Prev image</h2>
                         <div class="mt-5">
                             <div>@lang('site.previous_image')</div>
                             <img class="w-20 max-h-20" src="{{ asset('storage/app/public/' . $personal->photo) }}">
                         </div>
+                    @endif --}}
+
+                    @if (isset($personal) && $personal->photo)
+                        <h2>Prev image</h2>
+                        <div class="mt-5">
+                            <div>@lang('site.previous_image')</div>
+                            <img class="w-20 max-h-20 rounded-md border border-gray-300"
+                                src="{{ Storage::url($personal->photo) }}"
+                                alt="Previous Photo">
+                        </div>
                     @endif
+
                 </div>
 
                 <div class="od-field-desc od-pt-10">

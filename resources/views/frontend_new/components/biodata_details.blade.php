@@ -146,11 +146,10 @@
             </a>
 
             <a href="javascript:void(0);" onclick="toastr.success('Copied to clipboard')"
-                class="od-button od-biodata-ignoreList od-biodata-ignoreList-link !flex !max-w-xl copy-biodata-link  items-center justify-center !p-4 px-5 py-3 rounded-md bg-blue-600 text-white font-medium shadow-md hover:bg-blue-700 transition-all duration-300 ease-in-out copy-biodata-link">
+                class="od-button od-biodata-ignoreList od-biodata-ignoreList-link !flex !max-w-xl items-center justify-center !p-4 px-5 py-3 rounded-md bg-blue-600 text-white font-medium shadow-md hover:bg-blue-700 transition-all duration-300 ease-in-out copy-biodata-link">
                 <i class="fa fa-files-o" aria-hidden="true"></i>
                 <span class="whitespace-nowrap">Copy Link</span>
             </a>
-
 
             <input type="hidden" id="copy_biodata_link" value="{{ route('frontend.biodata_details', $biodata->id) }}">
         </div>
@@ -194,7 +193,6 @@
                             <div class="ebogc-item ebogc-location">
                                 <label>@lang('site.present_address')</label>
 
-
                                 <p>
                                     @php
                                         $present_zella = explode(',', $biodata->address()->present_zella);
@@ -220,8 +218,6 @@
                         @if ($biodata->address()->where_raised != null)
                             <div class="ebogc-item ebogc-text-box">
                                 <label>@lang('site.where_raised')?</label>
-
-
                                 <p>{{ $biodata->address()->where_raised }}</p>
 
                             </div>

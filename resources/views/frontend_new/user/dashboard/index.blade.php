@@ -15,6 +15,12 @@
                             <div class="odd-home-card-inner overflow-hidden">
                                 <div class="odd-home-card-content overflow-hidden">
                                     <div class="odd-user-info hmm">
+
+                                        {{-- <img class="w-20 max-h-20 rounded-md border border-gray-300"
+                                        src="{{ Storage::url($personal->photo) }}"
+                                        alt="Previous Photo"> --}}
+
+                    
                                         <img src="{{ asset('assets/images/users/' . ($user->gender == '1' ? 'nikab.PNG' : 'islamicMan.jpg')) }}"
                                             alt="{{ $user->gender == '1' ? 'Fem' : 'M' }}ale-Avatar"
                                             class="!mx-auto rounded-full">
@@ -90,6 +96,16 @@
                                             <h3 class="!text-[#631a53]">{{ $user->name }}</h3>
                                             <a href="{{ route('user.edit_biodata.index') }}"
                                                 class="!no-underline">@lang('site.edit_biodata')</a>
+                                            @if($biodata->status == '5' && $biodata->postponed_note != null)
+                                               <div class="alert alert-warning text-center mt-3 mb-2" role="alert" style="max-width: 500px; margin: 0 auto;">
+                                                <h3 class="text-danger mb-2">
+                                                    <span>Status:</span> Postponed
+                                                </h3>
+                                                <p class="mb-0 text-muted">
+                                                    <span>Comment:</span> {{ $incomplete_biodata->postponed_note }}
+                                                </p>
+                                            </div>
+                                            @endif
                                             {{-- <a href="{{ route('user.settings') }}" class="!no-underline">@lang('site.edit_profile')</a> --}}
                                         </div>
                                     </div>

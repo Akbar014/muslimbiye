@@ -2,11 +2,12 @@
 
 namespace App\Http\Controllers\Backend\Admin;
 
+use Exception;
 use App\Models\User;
 use App\Models\Biodata;
-use Illuminate\Http\Request;
 // use App\Models\BioData;
 // use App\Models\DraftBiodata;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
@@ -53,45 +54,78 @@ class DashboardController extends Controller
 
 
     public function index()
-{
-    $haspermision = auth()->user()->can('dashboard-read');
-    $user = Auth::guard('admin')->user();
+    {
+        $haspermision = auth()->user()->can('dashboard-read');
+        $user = Auth::guard('admin')->user();
 
-    $pendingBiodata = "";
-    $biodataCount   = \App\Models\Biodata::where(['deleted' => "0", "status" => "2"])->count();
-
-    if ($user->can('biodata-index')) {
-        $pendingBiodata = \App\Models\Biodata::where(['deleted' => "0", 'status' => '1'])
-            ->latest()->take(20)->get();
-    }
-
-    if (!$haspermision) {
-        abort(403, 'Sorry, you are not authorized to access the page');
-    }
-
-    // GA4: safe fetch (no crash if missing access)
-    $propertyId = config('services.google_analytics.property_id');
-    $report = null;
-
-    try {
-        if ($propertyId) {
-            $report = $this->analyticsService->getReport($propertyId);
+        if (!$haspermision) {
+            abort(403, 'Sorry, you are not authorized to access the page');
         }
-    } catch (GoogleServiceException $e) {
-        Log::warning('GA4 fetch failed', ['code' => $e->getCode(), 'message' => $e->getMessage()]);
+
+        // ----- Status helpers (view-এর জন্য) -----
+        $statusLabels = [
+            0 => 'Incomplete',
+            1 => 'Pending',
+            2 => 'Approved',
+            3 => 'Suspected',
+            4 => 'Married',
+            5 => 'Postponed',
+        ];
+        $statusClasses = [ // Bootstrap 4 badge classes
+            0 => 'badge-secondary',
+            1 => 'badge-warning',
+            2 => 'badge-success',
+            3 => 'badge-warning',   // চাইলে 'badge-danger' করতে পারো
+            4 => 'badge-info',
+            5 => 'badge-dark',
+        ];
+
+        $pendingBiodata = collect();
+
+        $biodataCount   = Biodata::where(['deleted' => "0", "status" => "2"])->count();
+
+        if ($user->can('biodata-index')) {     
+                $pendingBiodata = Biodata::where(['deleted' => "0", 'status' => '1'])
+                        ->latest()
+                        ->take(20)
+                        ->get();
+        }
+
+        $statusCounts = Biodata::where('deleted', '0')
+            ->selectRaw('status, COUNT(*) as cnt')
+            ->groupBy('status')
+            ->pluck('cnt', 'status')
+            ->toArray();
+
+        $propertyId = config('services.google_analytics.property_id');
         $report = null;
-    } catch (\Throwable $e) {
-        Log::error('GA4 unexpected error', ['message' => $e->getMessage()]);
-        $report = null;
+
+        try {
+            if ($propertyId) {
+                $report = $this->analyticsService->getReport($propertyId);
+            }
+        } catch (GoogleServiceException $e) {
+            Log::warning('GA4 fetch failed', ['code' => $e->getCode(), 'message' => $e->getMessage()]);
+            $report = null;
+        } catch (Exception $e) {
+            Log::error('GA4 unexpected error', ['message' => $e->getMessage()]);
+            $report = null;
+        }
+
+        $totalUser             = User::whereNotNull('email')->whereNotNull('phone')->count();
+        $totalCompletedBiodata = Biodata::where('status', '2')->count();
+
+        return view('backend.admin.home', compact(
+            'pendingBiodata',
+            'biodataCount',
+            'report',
+            'totalUser',
+            'totalCompletedBiodata',
+            'statusLabels',
+            'statusClasses',
+            'statusCounts'
+        ));
     }
-
-    $totalUser             = \App\Models\User::whereNotNull('email')->whereNotNull('phone')->count();
-    $totalCompletedBiodata = \App\Models\Biodata::where('status', '2')->count();
-
-    return view('backend.admin.home', compact(
-        'pendingBiodata', 'biodataCount', 'report', 'totalUser', 'totalCompletedBiodata'
-    ));
-}
 
 
     public function getBiodataStats()
@@ -101,7 +135,8 @@ class DashboardController extends Controller
             "pending" => 1,
             "approved" => 2,
             "suspected" => 3,
-            "married" => 4
+            "married" => 4,
+            "postponed"  => 5,
         ];
 
         $chartData = [];
@@ -111,7 +146,7 @@ class DashboardController extends Controller
                 ->where("status", $status)
                 ->selectRaw("DATE_FORMAT(created_at, '%Y-%m') as month, COUNT(*) as count")
                 ->groupBy("month")
-                ->orderBy("month", "ASC")
+                ->orderBy("month", "desc")
                 ->pluck("count", "month")
                 ->toArray();
         }
