@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Backend\User;
 
 use App\Models\Biodata;
 use Illuminate\Support\Str;
+use Illuminate\Validation\Rule;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use App\Models\BiodataFamilyInfo;
@@ -166,14 +167,14 @@ class BiodataController extends Controller
         $rules = [
             'bride_groom'     => ['required','in:bride,groom'],
             'marital_status'  => ['required'],
-            'day'             => ['nullable','integer','between:1,31'],
-            'month'           => ['nullable','integer','between:1,12'],
-            'year'            => ['nullable','integer','between:1950,' . now()->year],
-            'height'          => ['nullable','string','max:32'],
-            'complexion'      => ['nullable','string','max:32'],
-            'weight'          => ['nullable','string','max:16'],
-            'blood_group'     => ['nullable','in:A+,A-,B+,B-,O+,O-,AB+,AB-,N/A'],
-            'page_id'         => ['nullable','integer','min:0'],
+            'day'             => ['required','integer','between:1,31'],
+            'month'           => ['required','integer','between:1,12'],
+            'year'            => ['required','integer','between:1950,' . now()->year],
+            'height'          => ['required','string','max:32'],
+            'complexion'      => ['required','string','max:32'],
+            'weight'          => ['required','string','max:16'],
+            'blood_group'     => ['required','in:A+,A-,B+,B-,O+,O-,AB+,AB-,N/A'],
+            'page_id'         => ['required','integer','min:0'],
         ];
 
         $messages = [
@@ -339,60 +340,366 @@ class BiodataController extends Controller
         ]);
     }
 
+    // public function education(Request $request)
+    // {
+    //     $page_id = (int) ($request->input('page_id', 0));
+    //     $user_id = Auth::guard('user')->id();
+
+    //     // সব VARCHAR(255) ফিল্ড
+    //     $varchar255 = [
+    //         'education_medium',
+    //         'general_highest_education',
+    //         'general_highest_school_study',
+    //         'ssc_year',
+    //         'ssc_dept',
+    //         'ssc_result',
+    //         'hsc_study_running',
+    //         'study_after_ssc',
+    //         'hsc_pass_year',
+    //         'hsc_dept',
+    //         'hsc_result',
+    //         'diploma_subject',
+    //         'diploma_institution',
+    //         'diploma_current_year',
+    //         'diploma_passing_year',
+    //         'honors_subject',
+    //         'honors_institution',
+    //         'honors_instutution',
+    //         'honors_passing_year',
+    //         'honors_study_year',
+    //         'masters_subject',
+    //         'masters_institution',
+    //         'masters_passing_year',
+    //         'doctorate_subject',
+    //         'doctorate_institution',
+    //         'doctorate_passing_year',
+    //         'qawmi_education_qualification',
+    //         'ibtedai_madrasa',
+    //         'mutawassitah_madrasa',
+    //         'sanabia_ulya_madrasa',
+    //         'fazilat_madrasa',
+    //         'takmil_madrasa',
+    //         'takhassus_madrasa',
+    //         'qawmi_result',
+    //         'qawmi_passing_year',
+    //         'takhassus_subject',
+    //         'takhassus_result',
+    //         'takhassus_passing_year',
+    //         'others_educational_qualifications',
+    //         'deen_designations',
+    //     ];
+
+    //     // --- বাংলা লেবেল (error message friendly) ---
+    //     $bnLabels = [
+    //         'education_medium' => 'শিক্ষার মাধ্যম',
+    //         'general_highest_education' => 'সর্বোচ্চ শিক্ষা',
+    //         'general_highest_school_study' => 'স্কুল পর্যন্ত পড়াশোনা',
+    //         'ssc_year' => 'এসএসসি সন',
+    //         'ssc_dept' => 'এসএসসি বিভাগ',
+    //         'ssc_result' => 'এসএসসি ফলাফল',
+    //         'hsc_study_running' => 'এইচএসসি অধ্যয়ন',
+    //         'study_after_ssc' => 'এসএসসি পরবর্তী পড়াশোনা',
+    //         'hsc_pass_year' => 'এইচএসসি পাশের সন',
+    //         'hsc_dept' => 'এইচএসসি বিভাগ',
+    //         'hsc_result' => 'এইচএসসি ফলাফল',
+    //         'diploma_subject' => 'ডিপ্লোমা বিষয়',
+    //         'diploma_institution' => 'ডিপ্লোমা প্রতিষ্ঠান',
+    //         'diploma_current_year' => 'চলতি বর্ষ',
+    //         'diploma_passing_year' => 'পাশের সন',
+    //         'honors_subject' => 'অনার্স বিষয়',
+    //         'honors_institution' => 'অনার্স প্রতিষ্ঠান',
+    //         'honors_instutution' => 'অনার্স প্রতিষ্ঠান',
+    //         'honors_passing_year' => 'অনার্স পাশের সন',
+    //         'honors_study_year' => 'অনার্স অধ্যয়ন বর্ষ',
+    //         'masters_subject' => 'মাস্টার্স বিষয়',
+    //         'masters_institution' => 'মাস্টার্স প্রতিষ্ঠান',
+    //         'masters_passing_year' => 'মাস্টার্স পাশের সন',
+    //         'doctorate_subject' => 'ডক্টরেট বিষয়',
+    //         'doctorate_institution' => 'ডক্টরেট প্রতিষ্ঠান',
+    //         'doctorate_passing_year' => 'ডক্টরেট পাশের সন',
+    //         'qawmi_education_qualification' => 'কওমি শিক্ষা যোগ্যতা',
+    //         'ibtedai_madrasa' => 'ইবতেদায়ী মাদরাসা',
+    //         'mutawassitah_madrasa' => 'মুতাওয়াসসিতা মাদরাসা',
+    //         'sanabia_ulya_madrasa' => 'সানাবিয়া উলিয়া মাদরাসা',
+    //         'fazilat_madrasa' => 'ফাজিলাত মাদরাসা',
+    //         'takmil_madrasa' => 'তাকমিল মাদরাসা',
+    //         'takhassus_madrasa' => 'তাখাসসুস মাদরাসা',
+    //         'qawmi_result' => 'কওমি ফলাফল',
+    //         'qawmi_passing_year' => 'কওমি পাশের সন',
+    //         'takhassus_subject' => 'তাখাসসুস বিষয়',
+    //         'takhassus_result' => 'তাখাসসুস ফলাফল',
+    //         'takhassus_passing_year' => 'তাখাসসুস পাশের সন',
+    //         'others_educational_qualifications' => 'অন্যান্য শিক্ষাগত যোগ্যতা',
+    //         'deen_designations' => 'দ্বীনি পদবী',
+    //     ];
+
+    //     // --- Helper: Bangla digits → English digits ---
+    //     $bnDigits = ['০','১','২','৩','৪','৫','৬','৭','৮','৯'];
+    //     $enDigits = ['0','1','2','3','4','5','6','7','8','9'];
+    //     $toEnYear = function ($v) use ($bnDigits, $enDigits) {
+    //         if ($v === null) return null;
+    //         // convert bn→en then keep only digits
+    //         $v = str_replace($bnDigits, $enDigits, (string)$v);
+    //         $v = preg_replace('/\D+/', '', $v ?? '');
+    //         return $v ?: null;
+    //     };
+
+    //     // --- Pre-normalize: Year-like fields accept Bangla or English digits ---
+    //     // Suffixes we treat as "year" fields
+    //     $yearSuffixes = ['_year', '_passing_year', '_pass_year'];
+    //     foreach ($varchar255 as $f) {
+    //         foreach ($yearSuffixes as $suf) {
+    //             if (\Illuminate\Support\Str::endsWith($f, $suf) && $request->filled($f)) {
+    //                 $request->merge([$f => $toEnYear($request->input($f))]);
+    //                 break;
+    //             }
+    //         }
+    //     }
+
+    //     // --- Validation rules ---
+    //     $rules = [];
+    //     foreach ($varchar255 as $f) {
+    //         if (\Illuminate\Support\Str::endsWith($f, $yearSuffixes)) {
+    //             $rules[$f] = ['nullable', 'digits:4', 'regex:/^(19|20)\d{2}$/'];
+    //         } else {
+    //             $rules[$f] = ['nullable', 'string', 'max:255'];
+    //         }
+    //     }
+
+    //     // --- Bangla messages ---
+    //     $messages = [];
+    //     foreach ($varchar255 as $f) {
+    //         $label = $bnLabels[$f] ?? $f;
+
+    //         if (\Illuminate\Support\Str::endsWith($f, $yearSuffixes)) {
+    //             $messages["$f.digits"] = "‘{$label}’ ৪ সংখ্যার হতে হবে (যেমন 2022)।";
+    //             $messages["$f.regex"]  = "‘{$label}’ সঠিক বছর নয়।";
+    //         }
+
+    //         $messages["$f.string"]   = "‘{$label}’ অবশ্যই টেক্সট হতে হবে।";
+    //         $messages["$f.max"]      = "‘{$label}’ ২৫৫ অক্ষরের বেশি হতে পারবে না।";
+    //         $messages["$f.required"] = "‘{$label}’ ঘরটি পূরণ করুন।";
+    //     }
+    //     $request->validate($rules, $messages);
+
+    //     // --- Sanitize: trim & hard-limit 255 ---
+    //     $clean = [];
+    //     foreach ($varchar255 as $f) {
+    //         $val = $request->input($f);
+    //         if (is_array($val)) $val = implode(',', $val);
+    //         if ($val !== null) {
+    //             $val = trim((string) $val);
+    //             if (mb_strlen($val) > 255) $val = mb_substr($val, 0, 255);
+    //         }
+    //         $clean[$f] = $val ?: null;
+    //     }
+
+    //     // honors_instutution → honors_institution mapping
+    //     if (!array_key_exists('honors_institution', $clean) || $clean['honors_institution'] === null) {
+    //         if (!empty($clean['honors_instutution'])) {
+    //             $clean['honors_institution'] = $clean['honors_instutution'];
+    //         }
+    //     }
+
+    //     unset($clean['honors_instutution']);
+
+    //     DB::transaction(function () use ($user_id, $clean) {
+    //         $biodata = Biodata::updateOrCreate(
+    //             ['user_id' => $user_id, 'deleted' => '0', 'admin_created' => '0'],
+    //             ['user_id' => $user_id]
+    //         );
+
+    //         $payload = array_merge([
+    //             'user_id'    => $user_id,
+    //             'biodata_id' => $biodata->id,
+    //         ], $clean);
+
+    //         $data = BiodataEducationInfo::updateOrCreate(
+    //             ['user_id' => $user_id, 'biodata_id' => $biodata->id],
+    //             $payload
+    //         );
+
+    //         $biodata->education_id = $data->id;
+
+    //         // Completed step update
+    //         $completed = json_decode($biodata->completed, true) ?: [];
+    //         if (!in_array('family', $completed, true)) {
+    //             $completed[] = 'family';
+    //         }
+    //         $biodata->completed = json_encode($completed);
+    //         $biodata->save();
+    //     });
+
+    //     return back()->with([
+    //         'page_id' => $page_id + 1,
+    //         'success' => 'শিক্ষাগত তথ্য সফলভাবে সংরক্ষিত হয়েছে। পরবর্তী ধাপে যান।',
+    //     ]);
+    // }
+
+
     public function education(Request $request)
     {
         $page_id = (int) ($request->input('page_id', 0));
         $user_id = Auth::guard('user')->id();
 
-        // সব VARCHAR(255) ফিল্ড
-        $varchar255 = [
-            'education_medium',
-            'general_highest_education',
-            'general_highest_school_study',
-            'ssc_year',
-            'ssc_dept',
-            'ssc_result',
-            'hsc_study_running',
-            'study_after_ssc',
-            'hsc_pass_year',
-            'hsc_dept',
-            'hsc_result',
-            'diploma_subject',
-            'diploma_institution',
-            'diploma_current_year',
-            'diploma_passing_year',
-            'honors_subject',
-            'honors_institution',
-            'honors_instutution',
-            'honors_passing_year',
-            'honors_study_year',
-            'masters_subject',
-            'masters_institution',
-            'masters_passing_year',
-            'doctorate_subject',
-            'doctorate_institution',
-            'doctorate_passing_year',
-            'qawmi_education_qualification',
-            'ibtedai_madrasa',
-            'mutawassitah_madrasa',
-            'sanabia_ulya_madrasa',
-            'fazilat_madrasa',
-            'takmil_madrasa',
-            'takhassus_madrasa',
-            'qawmi_result',
-            'qawmi_passing_year',
-            'takhassus_subject',
-            'takhassus_result',
-            'takhassus_passing_year',
-            'others_educational_qualifications',
-            'deen_designations',
+        // ---------- Bangla → English digit convert helper ----------
+        $bnDigits = ['০','১','২','৩','৪','৫','৬','৭','৮','৯'];
+        $enDigits = ['0','1','2','3','4','5','6','7','8','9'];
+        $toEnYear = function ($v) use ($bnDigits, $enDigits) {
+            if ($v === null) return null;
+            $v = str_replace($bnDigits, $enDigits, (string)$v);
+            $v = preg_replace('/\D+/', '', $v ?? '');
+            return $v ?: null;
+        };
+
+        // convert all year fields
+        foreach ($request->all() as $key => $val) {
+            if (Str::endsWith($key, ['_year', '_pass_year', '_passing_year']) && $val) {
+                $request->merge([$key => $toEnYear($val)]);
+            }
+        }
+
+        // ---------- Validation ----------
+        $yearRule = ['digits:4','regex:/^(19|20)\d{2}$/'];
+        $deptEnum = ['science','business_studies','humanities','vocational'];
+        $gradeEnum = ['all_A+','A+','A','A-','B','C','D'];
+        $hscRunEnum = ['hsc_1st','hsc_2nd','hsc_no_result','ssc_only'];
+        $qawmiQualEnum = ['primary_deen','ibtedai','mutawassitah','sanabia_ulya','fazilat','takmil','takhassus'];
+        $qawmiGradeEnum = ['mumtaz','zayed_ziddan','zayed','makbul'];
+        $deenEnum = ['hafiz','mawlana','mufti','mufassir','adib'];
+
+        $medium = $request->input('education_medium');
+        $ghe    = $request->input('general_highest_education');
+        $sas    = $request->input('study_after_ssc');
+        $qLevel = $request->input('qawmi_education_qualification');
+
+        $rules = [
+            'education_medium' => ['required', Rule::in(['general','alia','qawmi'])],
+            'general_highest_education' => ['nullable', Rule::in([
+                'below_ssc','ssc','hsc','diploma_running','diploma',
+                'honors_running','honors','masters','doctorate'
+            ])],
+            'general_highest_school_study' => ['nullable', Rule::in(['1','2','3','4','5','6','7','8','9','10'])],
+
+            'ssc_year'   => ['nullable', ...$yearRule],
+            'ssc_dept'   => ['nullable', Rule::in($deptEnum)],
+            'ssc_result' => ['nullable', Rule::in($gradeEnum)],
+
+            'hsc_study_running' => ['nullable', Rule::in($hscRunEnum)],
+            'study_after_ssc'   => ['nullable', Rule::in(['hsc','diploma'])],
+            'hsc_pass_year'     => ['nullable', ...$yearRule],
+            'hsc_dept'          => ['nullable', Rule::in($deptEnum)],
+            'hsc_result'        => ['nullable', Rule::in($gradeEnum)],
+
+            'diploma_subject'      => ['nullable','string','max:255'],
+            'diploma_institution'  => ['nullable','string','max:255'],
+            'diploma_current_year' => ['nullable','string','max:255'],
+            'diploma_passing_year' => ['nullable', ...$yearRule],
+
+            'honors_subject'        => ['nullable','string','max:255'],
+            'honors_institution'    => ['nullable','string','max:255'],
+            'honors_instutution'    => ['nullable','string','max:255'],
+            'honors_passing_year'   => ['nullable', ...$yearRule],
+            'honors_study_year'     => ['nullable','string','max:255'],
+
+            'masters_subject'       => ['nullable','string','max:255'],
+            'masters_institution'   => ['nullable','string','max:255'],
+            'masters_passing_year'  => ['nullable', ...$yearRule],
+
+            'doctorate_subject'     => ['nullable','string','max:255'],
+            'doctorate_institution' => ['nullable','string','max:255'],
+            'doctorate_passing_year'=> ['nullable', ...$yearRule],
+
+            'qawmi_education_qualification' => ['nullable', Rule::in($qawmiQualEnum)],
+            'ibtedai_madrasa'       => ['nullable','string','max:255'],
+            'mutawassitah_madrasa'  => ['nullable','string','max:255'],
+            'sanabia_ulya_madrasa'  => ['nullable','string','max:255'],
+            'fazilat_madrasa'       => ['nullable','string','max:255'],
+            'takmil_madrasa'        => ['nullable','string','max:255'],
+            'takhassus_madrasa'     => ['nullable','string','max:255'],
+            'qawmi_result'          => ['nullable', Rule::in($qawmiGradeEnum)],
+            'qawmi_passing_year'    => ['nullable', ...$yearRule],
+            'takhassus_subject'     => ['nullable','string','max:255'],
+            'takhassus_result'      => ['nullable', Rule::in($qawmiGradeEnum)],
+            'takhassus_passing_year'=> ['nullable', ...$yearRule],
+
+            'others_educational_qualifications' => ['nullable','string','max:255'],
+            'deen_designations' => ['nullable', Rule::in($deenEnum)],
         ];
 
-        // --- বাংলা লেবেল (error message friendly) ---
-        $bnLabels = [
+        // ---------- Conditional Required (★ mark fields) ----------
+        if (in_array($medium, ['general','alia'], true)) {
+            $rules['general_highest_education'][0] = 'required';
+            if ($ghe === 'below_ssc') $rules['general_highest_school_study'][0] = 'required';
+            if (in_array($ghe, ['ssc','hsc','diploma_running','diploma','honors_running','honors','masters','doctorate'], true)) {
+                $rules['ssc_year'][0] = 'required';
+                $rules['ssc_dept'][0] = 'required';
+                $rules['ssc_result'][0] = 'required';
+            }
+            if ($ghe === 'ssc') $rules['hsc_study_running'][0] = 'required';
+            if (in_array($ghe, ['honors_running','honors','masters','doctorate'], true)) $rules['study_after_ssc'][0] = 'required';
+            if ($ghe === 'hsc' || $sas === 'hsc') {
+                $rules['hsc_pass_year'][0] = 'required';
+                $rules['hsc_dept'][0] = 'required';
+                $rules['hsc_result'][0] = 'required';
+            }
+            if (in_array($ghe, ['diploma_running','diploma'], true) || $sas === 'diploma') {
+                $rules['diploma_subject'][0] = 'required';
+                $rules['diploma_institution'][0] = 'required';
+            }
+            if ($ghe === 'diploma_running') $rules['diploma_current_year'][0] = 'required';
+            if ($ghe === 'diploma' || $sas === 'diploma') $rules['diploma_passing_year'][0] = 'required';
+            if (in_array($ghe, ['honors_running','honors','masters','doctorate'], true)) {
+                $rules['honors_subject'][0] = 'required';
+                $rules['honors_instutution'][0] = 'required';
+            }
+            if ($ghe === 'honors_running') $rules['honors_study_year'][0] = 'required';
+            if (in_array($ghe, ['honors','masters','doctorate'], true)) $rules['honors_passing_year'][0] = 'required';
+            if (in_array($ghe, ['masters','doctorate'], true)) {
+                $rules['masters_subject'][0] = 'required';
+                $rules['masters_institution'][0] = 'required';
+                $rules['masters_passing_year'][0] = 'required';
+            }
+            if ($ghe === 'doctorate') {
+                $rules['doctorate_subject'][0] = 'required';
+                $rules['doctorate_institution'][0] = 'required';
+                $rules['doctorate_passing_year'][0] = 'required';
+            }
+        }
+
+        if ($medium === 'qawmi') {
+            $rules['qawmi_education_qualification'][0] = 'required';
+            $level2Madrasa = [
+                'ibtedai'=>'ibtedai_madrasa','mutawassitah'=>'mutawassitah_madrasa',
+                'sanabia_ulya'=>'sanabia_ulya_madrasa','fazilat'=>'fazilat_madrasa',
+                'takmil'=>'takmil_madrasa','takhassus'=>'takhassus_madrasa',
+            ];
+            if (isset($level2Madrasa[$qLevel])) $rules[$level2Madrasa[$qLevel]][0] = 'required';
+            if (in_array($qLevel, ['ibtedai','mutawassitah','sanabia_ulya','fazilat','takmil','takhassus'], true)) {
+                $rules['qawmi_result'][0] = 'required';
+                $rules['qawmi_passing_year'][0] = 'required';
+            }
+            if ($qLevel === 'takhassus') {
+                $rules['takhassus_subject'][0] = 'required';
+                $rules['takhassus_result'][0] = 'required';
+                $rules['takhassus_passing_year'][0] = 'required';
+            }
+        }
+
+        // ---------- Messages: সবকিছু বাংলায় + বাংলা লেবেল ----------
+        $messages = [
+            'required' => ':attribute ঘরটি পূরণ করুন।',
+            'max'      => ':attribute ২৫৫ অক্ষরের বেশি হতে পারবে না।',
+            'string'   => ':attribute অবশ্যই টেক্সট হতে হবে।',
+            'in'       => ':attribute এর মান সঠিক নয়।',
+            'digits'   => ':attribute ৪ সংখ্যার হতে হবে (যেমন ২০২২)।',
+            'regex'    => ':attribute সঠিক বছর নয়।',
+        ];
+
+        $attributes = [
             'education_medium' => 'শিক্ষার মাধ্যম',
             'general_highest_education' => 'সর্বোচ্চ শিক্ষা',
-            'general_highest_school_study' => 'স্কুল পর্যন্ত পড়াশোনা',
+            'general_highest_school_study' => 'সর্বোচ্চ শ্রেণি',
             'ssc_year' => 'এসএসসি সন',
             'ssc_dept' => 'এসএসসি বিভাগ',
             'ssc_result' => 'এসএসসি ফলাফল',
@@ -403,8 +710,8 @@ class BiodataController extends Controller
             'hsc_result' => 'এইচএসসি ফলাফল',
             'diploma_subject' => 'ডিপ্লোমা বিষয়',
             'diploma_institution' => 'ডিপ্লোমা প্রতিষ্ঠান',
-            'diploma_current_year' => 'চলতি বর্ষ',
-            'diploma_passing_year' => 'পাশের সন',
+            'diploma_current_year' => 'ডিপ্লোমা চলতি বর্ষ',
+            'diploma_passing_year' => 'ডিপ্লোমা পাশের সন',
             'honors_subject' => 'অনার্স বিষয়',
             'honors_institution' => 'অনার্স প্রতিষ্ঠান',
             'honors_instutution' => 'অনার্স প্রতিষ্ঠান',
@@ -432,98 +739,34 @@ class BiodataController extends Controller
             'deen_designations' => 'দ্বীনি পদবী',
         ];
 
-        // --- Helper: Bangla digits → English digits ---
-        $bnDigits = ['০','১','২','৩','৪','৫','৬','৭','৮','৯'];
-        $enDigits = ['0','1','2','3','4','5','6','7','8','9'];
-        $toEnYear = function ($v) use ($bnDigits, $enDigits) {
-            if ($v === null) return null;
-            // convert bn→en then keep only digits
-            $v = str_replace($bnDigits, $enDigits, (string)$v);
-            $v = preg_replace('/\D+/', '', $v ?? '');
-            return $v ?: null;
-        };
+        \Validator::make($request->all(), $rules, $messages, $attributes)->validate();
 
-        // --- Pre-normalize: Year-like fields accept Bangla or English digits ---
-        // Suffixes we treat as "year" fields
-        $yearSuffixes = ['_year', '_passing_year', '_pass_year'];
-        foreach ($varchar255 as $f) {
-            foreach ($yearSuffixes as $suf) {
-                if (\Illuminate\Support\Str::endsWith($f, $suf) && $request->filled($f)) {
-                    $request->merge([$f => $toEnYear($request->input($f))]);
-                    break;
-                }
-            }
-        }
-
-        // --- Validation rules ---
-        $rules = [];
-        foreach ($varchar255 as $f) {
-            if (\Illuminate\Support\Str::endsWith($f, $yearSuffixes)) {
-                $rules[$f] = ['nullable', 'digits:4', 'regex:/^(19|20)\d{2}$/'];
-            } else {
-                $rules[$f] = ['nullable', 'string', 'max:255'];
-            }
-        }
-
-        // --- Bangla messages ---
-        $messages = [];
-        foreach ($varchar255 as $f) {
-            $label = $bnLabels[$f] ?? $f;
-
-            if (\Illuminate\Support\Str::endsWith($f, $yearSuffixes)) {
-                $messages["$f.digits"] = "‘{$label}’ ৪ সংখ্যার হতে হবে (যেমন 2022)।";
-                $messages["$f.regex"]  = "‘{$label}’ সঠিক বছর নয়।";
+        // ---------- Save ----------
+        DB::transaction(function () use ($user_id, $request) {
+            $clean = [];
+            foreach ($request->all() as $k => $v) {
+                $v = is_string($v) ? trim($v) : $v;
+                $clean[$k] = $v !== '' ? $v : null;
             }
 
-            $messages["$f.string"]   = "‘{$label}’ অবশ্যই টেক্সট হতে হবে।";
-            $messages["$f.max"]      = "‘{$label}’ ২৫৫ অক্ষরের বেশি হতে পারবে না।";
-            $messages["$f.required"] = "‘{$label}’ ঘরটি পূরণ করুন।";
-        }
-        $request->validate($rules, $messages);
-
-        // --- Sanitize: trim & hard-limit 255 ---
-        $clean = [];
-        foreach ($varchar255 as $f) {
-            $val = $request->input($f);
-            if (is_array($val)) $val = implode(',', $val);
-            if ($val !== null) {
-                $val = trim((string) $val);
-                if (mb_strlen($val) > 255) $val = mb_substr($val, 0, 255);
-            }
-            $clean[$f] = $val ?: null;
-        }
-
-        // honors_instutution → honors_institution mapping
-        if (!array_key_exists('honors_institution', $clean) || $clean['honors_institution'] === null) {
-            if (!empty($clean['honors_instutution'])) {
+            if (empty($clean['honors_institution']) && !empty($clean['honors_instutution'])) {
                 $clean['honors_institution'] = $clean['honors_instutution'];
             }
-        }
-        unset($clean['honors_instutution']);
+            unset($clean['honors_instutution']);
 
-        DB::transaction(function () use ($user_id, $clean) {
             $biodata = Biodata::updateOrCreate(
                 ['user_id' => $user_id, 'deleted' => '0', 'admin_created' => '0'],
                 ['user_id' => $user_id]
             );
 
-            $payload = array_merge([
-                'user_id'    => $user_id,
-                'biodata_id' => $biodata->id,
-            ], $clean);
-
             $data = BiodataEducationInfo::updateOrCreate(
                 ['user_id' => $user_id, 'biodata_id' => $biodata->id],
-                $payload
+                array_merge(['user_id'=>$user_id,'biodata_id'=>$biodata->id], $clean)
             );
 
             $biodata->education_id = $data->id;
-
-            // Completed step update
             $completed = json_decode($biodata->completed, true) ?: [];
-            if (!in_array('family', $completed, true)) {
-                $completed[] = 'family';
-            }
+            if (!in_array('family', $completed, true)) $completed[] = 'family';
             $biodata->completed = json_encode($completed);
             $biodata->save();
         });
@@ -804,8 +1047,9 @@ class BiodataController extends Controller
         if ($request->filled('phone_number')) {
             $normalized = $this->normalizeLocalPhone($request->input('phone_number'));
             $request->merge(['phone_number' => $normalized]);
-        }
+        }       
 
+    
         /* Validate (single pass) */
         $request->validate([
             'dressup'             => ['nullable','string','max:255'],
@@ -826,14 +1070,16 @@ class BiodataController extends Controller
             'person_category'     => ['nullable','array'],
             'become_muslim'       => ['nullable','string','max:255'],
             'hobby'               => ['nullable'],
-            'phone_number' => ['nullable','regex:/^01[3-9]\d{8}$/'],
-            'photo'        => ['nullable','image','mimes:jpeg,png,jpg,gif','max:2048'],
+            'phone_number' => ['required', 'digits:11', 'regex:/^01[3-9]\d{8}$/'],
+            'photo'        => ['required','image','mimes:jpeg,png,jpg,gif','max:2048'],
         ], [
             'phone_number.regex' => 'ফোন নম্বরটি 01XXXXXXXXX ফরম্যাটে দিন (বাংলা সংখ্যাও লিখতে পারেন)।',
+            'phone_number.digits'   => 'মোবাইল নাম্বার অবশ্যই ১১ সংখ্যার হতে হবে।',
             'photo.image'        => 'শুধুমাত্র ইমেজ ফাইল আপলোড করতে পারবেন।',
             'photo.mimes'        => 'ইমেজ ফরম্যাট jpeg, png, jpg বা gif হতে হবে।',
             'photo.max'          => 'ইমেজের সাইজ সর্বোচ্চ 2MB হতে পারবে।',
         ]);
+           
 
         /* Sanitize: trim + 255 hard-cap */
         $cap = function ($v) {
@@ -936,14 +1182,14 @@ class BiodataController extends Controller
         $request->validate([
             'profession'         => ['required','string','max:255'],
             'profession_details' => ['required','string','max:255'],
-            'monthly_income'     => ['required','string','max:255'],
+            'monthly_income'     => ['required','numeric'],
         ], [
             'profession.required'         => 'পেশা লিখুন।',
             'profession_details.required' => 'পেশার বিস্তারিত লিখুন।',
             'monthly_income.required'     => 'মাসিক আয় লিখুন।',
             'profession.max'              => 'পেশা ২৫৫ অক্ষরের বেশি হতে পারবে না।',
             'profession_details.max'      => 'পেশার বিস্তারিত ২৫৫ অক্ষরের বেশি হতে পারবে না।',
-            'monthly_income.max'          => 'মাসিক আয় ২৫৫ অক্ষরের বেশি হতে পারবে না।',
+            'monthly_income.numeric'      => 'মাসিক আয় একটি বৈধ সংখ্যা হতে হবে।',
         ]);
 
         // Sanitize
@@ -1183,12 +1429,14 @@ class BiodataController extends Controller
             'biodata_email'     => ['nullable','string','email','max:255'],
 
             // phones optional but format-checked if present
-           'gurdian_phone'     => ['nullable','regex:/^01[3-9]\d{8}$/'],
-           'gurdian_whatsapp'  => ['nullable','regex:/^01[3-9]\d{8}$/'],
+           'gurdian_phone'     => ['numeric', 'regex:/^01[3-9]\d{8}$/'],
+           'gurdian_whatsapp'  => ['numeric', 'regex:/^01[3-9]\d{8}$/'],
         ], [
             'gurdian_phone.regex'    => 'অভিভাবকের ফোন নম্বরটি 01XXXXXXXXX ফরম্যাটে দিন (বাংলা সংখ্যাও লিখতে পারেন)।',
             'gurdian_whatsapp.regex' => 'অভিভাবকের হোয়াটসঅ্যাপ নম্বরটি 01XXXXXXXXX ফরম্যাটে দিন (বাংলা সংখ্যাও লিখতে পারেন)।',
             'biodata_email.email'    => 'বৈধ ইমেইল ঠিকানা দিন।',
+            'gurdian_phone.numeric'    => 'অভিভাবকের ফোন নম্বরটি শুধুমাত্র সংখ্যা হতে হবে।',
+            'gurdian_whatsapp.numeric' => 'অভিভাবকের হোয়াটসঅ্যাপ নম্বরটি শুধুমাত্র সংখ্যা হতে হবে।',
         ]);
 
         $cap = function ($v) {
@@ -1222,6 +1470,7 @@ class BiodataController extends Controller
             );
 
             $biodata->contact_id = $data->id;
+            $biodata->is_submit = true;
             $biodata->save();
         });
 

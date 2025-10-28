@@ -162,7 +162,7 @@
         padding: 20px;
         border-radius: 8px;
         text-align: center;
-        width: 700px;
+        width: 800px;
         max-width: 90%;
         box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
     }
@@ -206,58 +206,54 @@
 
 
 <div id="approvalModal" class="custom-modal">
-    <div class="custom-modal-content">
-        <span id="closeModalBtn1" class="close-btn">&times;</span>
+  <div class="custom-modal-content" style="max-width:480px;padding:25px 30px;text-align:center;border-radius:10px;background:#fff;box-shadow:0 5px 20px rgba(0,0,0,.15);">
+    <span id="closeModalBtn1" class="close-btn" style="float:right;font-size:22px;font-weight:600;cursor:pointer;color:#444;">&times;</span>
 
-        <h1
-            style="
-      background: linear-gradient(217deg, #1f0785 0%, #af2199 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
+    <h2 style="
+      font-weight:700;
+      background: linear-gradient(217deg,#1f0785 0%,#af2199 100%);
+      -webkit-background-clip:text;
+      -webkit-text-fill-color:transparent;
+      margin-bottom:15px;
     ">
-            সতর্কতা
-        </h1>
+      সতর্কতা
+    </h2>
 
-        <p>📜 <span style="color:#000;font-weight:700">মুসলিম বিয়ে-তে বায়োডাটা সাবমিট করার জন্য আন্তরিক
-                মোবারকবাদ!</span> 🌸</p>
+    <p style="color:#333;line-height:1.6;margin-bottom:10px;">
+      মুসলিম বিয়ে-তে বায়োডাটা সাবমিট করার জন্য আন্তরিক মোবারকবাদ।
+    </p>
 
-        <p>🌸 ইনশাআল্লাহ <span style="color:#000;font-weight:700">০৩ কার্যদিবসের মধ্যে</span>
-            <span style="color:#000;font-weight:700">ভেরিফিকেশন সম্পন্ন</span> করে আপনার বায়োডাটা এপ্রুভ করা হবে।
-        </p>
+    <p style="color:#333;line-height:1.6;margin-bottom:10px;">
+      ইনশাআল্লাহ <b>০৩ কার্যদিবসের মধ্যে</b> ভেরিফিকেশন সম্পন্ন করে আপনার বায়োডাটা এপ্রুভ করা হবে।
+    </p>
 
-        <p>🌸 এপ্রুভ হলে আপনার মেইলে <span style="color:#000;font-weight:700">নোটিফিকেশন</span> যাবে এবং
-            <span style="font-weight:700"><span style="color:#000;font-weight:700">ড্যাশবোর্ডেও</span> দেখতে
-                পারবেন</span>।
-        </p>
+    <p style="color:#333;line-height:1.6;margin-bottom:10px;">
+      এপ্রুভ হলে আপনার মেইলে নোটিফিকেশন যাবে এবং ড্যাশবোর্ডেও দেখতে পারবেন।
+    </p>
 
-        <p>✨ অনুগ্রহ করে
-            <span style="font-weight:700">আপনার <span style="color:#000;font-weight:700"> মোবাইল নাম্বার, অভিভাবকের
-                    সম্মতি ও নাম্বার সক্রিয় রাখুন</span> —
-                এটাই হতে পারে আপনার বরকতময় জীবনের প্রথম পদক্ষেপ <span style="color:#000;font-weight:700"> ইনশাআল্লাহ।
-                </span> </span> 🕊️
-        </p>
+    <p style="color:#333;line-height:1.6;margin-bottom:10px;">
+      অনুগ্রহ করে আপনার <b>মোবাইল নাম্বার ও অভিভাবকের নাম্বার সক্রিয় রাখুন</b> — এটি হতে পারে আপনার বরকতময় জীবনের প্রথম পদক্ষেপ ইনশাআল্লাহ।
+    </p>
 
-        <p><span style="color:#000;font-weight:700">জাযাকাল্লাহু খাইরান।</span> 💝</p>
+    <p style="color:#333;font-weight:600;margin-bottom:15px;">জাযাকাল্লাহু খাইরান।</p>
 
+    <div style="display:flex;justify-content:center;gap:10px;margin-top:15px;">
+      <button type="button" id="confirmSubmitBtn"
+        style="padding:8px 20px;color:#fff;background:#243c9b;border:none;border-radius:5px;cursor:pointer;font-weight:600;">
+        সাবমিট নিশ্চিত করুন
+      </button>
 
-        <div style="margin-top: 5px" class="mt-4 flex justify-center gap-3">
-            <button type="button" id="confirmSubmitBtn"
-                style="padding: 8px 20px; color:#fff; background-color: #2F4AB3; border: none; border-radius: 5px; cursor: pointer;">
-                সাবমিট নিশ্চিত করুন
-            </button>
-
-            <button type="button" id="cancelModalBtn"
-                style="padding: 8px 20px; color:#fff; background-color: #FF2ADE; border: none; border-radius: 5px; cursor: pointer;">
-                পরে করবো
-            </button>
-        </div>
-
+      <button type="button" id="cancelModalBtn"
+        style="padding:8px 20px;color:#fff;background:#c21ca2;border:none;border-radius:5px;cursor:pointer;font-weight:600;">
+        পরে করবো
+      </button>
     </div>
-</div>
+  </div>
 </div>
 
 
-<div id="afterFinalSubmit" class="custom-modal">
+
+{{-- <div id="afterFinalSubmit" class="custom-modal">
     <div class="custom-modal-content">
         <span id="closeModalBtn2" class="close-btn">&times;</span>
         <h2
@@ -282,9 +278,7 @@
             </a>
 
     </div>
-</div>
-
-
+</div> --}}
 
 
 {{-- <script>
@@ -341,55 +335,56 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
 <script>
-    document.addEventListener("DOMContentLoaded", function() {
-        const form = document.getElementById("contactForm");
-        const modal1 = document.getElementById("approvalModal");
-        const closeBtn1 = document.getElementById("closeModalBtn1");
-        const confirmBtn = document.getElementById("confirmSubmitBtn");
-        const cancelBtn1 = document.getElementById("cancelModalBtn");
-        const confirmed = document.getElementById("confirmed_once");
+document.addEventListener("DOMContentLoaded", function() {
+  const form       = document.getElementById("contactForm");
+  const modal1     = document.getElementById("approvalModal");
+  const closeBtn1  = document.getElementById("closeModalBtn1");
+  const confirmBtn = document.getElementById("confirmSubmitBtn");
+  const cancelBtn1 = document.getElementById("cancelModalBtn");
+  const confirmed  = document.getElementById("confirmed_once");
 
-        if (!form || !modal1 || !closeBtn1 || !confirmBtn || !cancelBtn1 || !confirmed) return;
+  // ⬇️ Use your preferred URL helper:
+  // const DASHBOARD_URL = "{{ route('user.dashboard') }}";
+  const DASHBOARD_URL = "{{ url('user/dashboard') }}"; // or just "user/dashboard"
 
-        // Step 1: Intercept submit → show Modal-1
-        form.addEventListener("submit", function(e) {
-            // যদি আগে কনফার্ম করা থাকে, সাবমিট যেতে দাও
-            if (confirmed.value === "1") return;
+  if (!form || !modal1 || !closeBtn1 || !confirmBtn || !cancelBtn1 || !confirmed) return;
 
-            e.preventDefault();
-            if (!form.checkValidity()) {
-                form.reportValidity();
-                return;
-            }
-            modal1.style.display = "flex";
-        });
+  // Intercept submit → show modal
+  form.addEventListener("submit", function(e) {
+    if (confirmed.value === "1") return; // already confirmed → allow submit
+    e.preventDefault();
+    if (!form.checkValidity()) { form.reportValidity(); return; }
+    modal1.style.display = "flex";
+  });
 
-        // Step 2: Confirm in Modal-1 → set hidden + submit
-        confirmBtn.addEventListener("click", function() {
-            modal1.style.display = "none";
-            confirmed.value = "1";
-            form.submit();
-        });
+  // Confirm → mark hidden + submit
+  confirmBtn.addEventListener("click", function() {
+    modal1.style.display = "none";
+    confirmed.value = "1";
+    form.submit();
+  });
 
-        // Cancel/close
-        function hideModal1() {
-            modal1.style.display = "none";
-        }
-        cancelBtn1.addEventListener("click", hideModal1);
-        closeBtn1.addEventListener("click", hideModal1);
-        window.addEventListener("click", (e) => {
-            if (e.target === modal1) hideModal1();
-        });
-        window.addEventListener("keydown", (e) => {
-            if (e.key === "Escape") hideModal1();
-        });
-    });
+  // Go dashboard helper
+  function goDashboard() {
+    modal1.style.display = "none";
+    window.location.href = DASHBOARD_URL;
+  }
+
+  // “পরে করবো” & Close (×) → dashboard
+  cancelBtn1.addEventListener("click", goDashboard);
+  closeBtn1.addEventListener("click", goDashboard);
+
+  // Backdrop/Escape → dashboard (remove if you only want to close)
+  window.addEventListener("click", (e) => { if (e.target === modal1) goDashboard(); });
+  window.addEventListener("keydown", (e) => { if (e.key === "Escape") goDashboard(); });
+});
 </script>
 
 
 
 
-@if (session('show_final_modal'))
+
+{{-- @if (session('show_final_modal'))
     <script>
         document.addEventListener("DOMContentLoaded", function() {
             var modal2 = document.getElementById('afterFinalSubmit');
@@ -411,4 +406,4 @@ document.addEventListener("DOMContentLoaded", function () {
             });
         });
     </script>
-@endif
+@endif --}}
