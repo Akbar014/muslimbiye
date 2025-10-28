@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Auth\User;
 use App\Http\Controllers\Controller;
 use App\Mail\OTP;
 use App\Models\User;
+use App\Models\Biodata;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -187,10 +188,14 @@ class LoginController extends Controller
                return redirect()->to(session('redirect'));
             }
             // return redirect()->route('user.dashboard');
+
+            $is_submit = Biodata::where('user_id', $user->id)->where('is_submit', true)->exists();
+
             return redirect()->route('user.edit_biodata.index')
               ->with([
-               'success' => 'মুসলিম বিয়ে-তে আপনাকে আন্তরিক স্বাগতম!', 'show_login_modal' => true
+               'success' => 'মুসলিম বিয়ে-তে আপনাকে আন্তরিক স্বাগতম!', 'show_login_modal' =>!$is_submit
               ]);
+
          } else {
             // if unsuccessful, then redirect back to the login with the form data
             $err = ['email' => 'Sorry! You Can Not Login'];
